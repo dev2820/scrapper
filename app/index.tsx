@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -7,15 +7,18 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
-import { CircleArrowUp } from "lucide-react-native";
+import { SendHorizonal } from "lucide-react-native";
+import { NativeOnlyAnimatedView } from "@/components/ui/native-only-animated-view";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 export default function HomeScreen() {
   const [messages, setMessages] = useState<string[]>([]);
   const [draft, setDraft] = useState("");
+  const lines = useMemo(() => Math.min(draft.split("\n").length, 6), [draft]);
   const canSend = draft.trim().length > 0;
 
   const handleSend = useCallback(() => {
@@ -34,6 +37,7 @@ export default function HomeScreen() {
         style={styles.wrapper}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={24}
+        className="bg-blue-50"
       >
         <View style={styles.messagesContainer}>
           <ScrollView
@@ -55,27 +59,35 @@ export default function HomeScreen() {
             )}
           </ScrollView>
         </View>
-        <View style={styles.inputRow}>
-          <Input
-            className="flex-1"
+        <NativeOnlyAnimatedView
+          className="flex flex-row py-2 px-2"
+          style={[{ height: lines * 24 + 32 }]}
+        >
+          <Textarea
+            className={cn(
+              "text-4 leading-normal flex-1 min-h-6 border-1 border-border shadow-lg rounded-3xl bg-white px-4",
+            )}
             placeholder="Type a message"
+            numberOfLines={1}
             value={draft}
             onChangeText={setDraft}
-            onSubmitEditing={handleSend}
-            returnKeyType="send"
-            blurOnSubmit={false}
+            submitBehavior="newline"
           />
           <Button
-            variant="ghost"
+            // variant="ghost"
             size="icon"
-            className="ml-2"
+            className="ml-2 self-end rounded-full"
             onPress={handleSend}
             accessibilityLabel="Send message"
             disabled={!canSend}
           >
-            <Icon as={CircleArrowUp} size={24} className="text-primary" />
+            <Icon
+              as={SendHorizonal}
+              size={20}
+              className="text-primary-foreground"
+            />
           </Button>
-        </View>
+        </NativeOnlyAnimatedView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -118,14 +130,5 @@ const styles = StyleSheet.create({
   messageText: {
     color: "#ffffff",
     fontSize: 16,
-  },
-  inputRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderTopWidth: 1,
-    borderTopColor: "#e2e8f0",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: "#ffffff",
   },
 });
