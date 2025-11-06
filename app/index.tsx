@@ -5,6 +5,7 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
@@ -14,6 +15,7 @@ import { SendHorizonal } from "lucide-react-native";
 import { NativeOnlyAnimatedView } from "@/components/ui/native-only-animated-view";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { Hyperlink } from "@/components/ui/hyperlink";
 
 export default function HomeScreen() {
   const [messages, setMessages] = useState<string[]>([]);
@@ -30,6 +32,12 @@ export default function HomeScreen() {
     setMessages((prev) => [...prev, trimmed]);
     setDraft("");
   }, [draft]);
+
+  const handleClickLink = useCallback((url: string) => {
+    Linking.openURL(url).catch((error) => {
+      console.warn("Failed to open url", error);
+    });
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -53,7 +61,9 @@ export default function HomeScreen() {
             ) : (
               messages.map((message, index) => (
                 <View style={styles.messageBubble} key={`${index}-${message}`}>
-                  <Text style={styles.messageText}>{message}</Text>
+                  <Hyperlink onPress={handleClickLink}>
+                    <Text style={styles.messageText}>{message}</Text>
+                  </Hyperlink>
                 </View>
               ))
             )}
@@ -120,7 +130,7 @@ const styles = StyleSheet.create({
   },
   messageBubble: {
     alignSelf: "flex-end",
-    backgroundColor: "#2563eb",
+    backgroundColor: "#dddddd",
     borderRadius: 16,
     paddingVertical: 10,
     paddingHorizontal: 14,
@@ -128,7 +138,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   messageText: {
-    color: "#ffffff",
+    color: "#111111",
     fontSize: 16,
   },
 });
