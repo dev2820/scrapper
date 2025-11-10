@@ -184,6 +184,8 @@ export default function HomeScreen() {
     };
   }, [messages, getFirstLinkFromMessage]);
 
+  let previousDateKey: string | null = null;
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -204,34 +206,52 @@ export default function HomeScreen() {
                 Start chatting by typing a message below.
               </Text>
             ) : (
-              messages.map((message) => (
-                <View style={styles.messageGroup} key={message.id}>
-                  <View style={styles.messageBubble}>
-                    <Hyperlink onPress={handleClickLink}>
-                      <Text style={styles.messageText}>{message.message}</Text>
-                    </Hyperlink>
+              messages.map((message) => {
+                const messageDate = toDate(message.date);
+                const dateKey = getDateKey(messageDate);
+                const showDivider = dateKey !== previousDateKey;
+                if (showDivider) {
+                  previousDateKey = dateKey;
+                }
+
+                return (
+                  <View key={message.id}>
+                    {showDivider ? (
+                      <DateDivider label={formatDateLabel(messageDate)} />
+                    ) : null}
+                    <View style={styles.messageGroup}>
+                      <View style={styles.messageBubble}>
+                        <Hyperlink onPress={handleClickLink}>
+                          <Text style={styles.messageText}>
+                            {message.message}
+                          </Text>
+                        </Hyperlink>
+                      </View>
+                      {(() => {
+                        const firstUrl = getFirstLinkFromMessage(
+                          message.message,
+                        );
+                        if (!firstUrl) {
+                          return null;
+                        }
+
+                        const preview = linkPreviews[message.id];
+                        if (!preview) {
+                          return null;
+                        }
+
+                        return (
+                          <LinkPreviewCard
+                            preview={preview}
+                            targetUrl={firstUrl}
+                            onOpen={handleClickLink}
+                          />
+                        );
+                      })()}
+                    </View>
                   </View>
-                  {(() => {
-                    const firstUrl = getFirstLinkFromMessage(message.message);
-                    if (!firstUrl) {
-                      return null;
-                    }
-
-                    const preview = linkPreviews[message.id];
-                    if (!preview) {
-                      return null;
-                    }
-
-                    return (
-                      <LinkPreviewCard
-                        preview={preview}
-                        targetUrl={firstUrl}
-                        onOpen={handleClickLink}
-                      />
-                    );
-                  })()}
-                </View>
-              ))
+                );
+              })
             )}
           </ScrollView>
         </View>
@@ -266,6 +286,16 @@ export default function HomeScreen() {
         </NativeOnlyAnimatedView>
       </KeyboardAvoidingView>
     </SafeAreaView>
+  );
+}
+
+function DateDivider({ label }: { label: string }) {
+  return (
+    <View style={styles.dateDividerContainer}>
+      <View style={styles.dateDividerLine} />
+      <Text style={styles.dateDividerText}>{label}</Text>
+      <View style={styles.dateDividerLine} />
+    </View>
   );
 }
 
@@ -442,6 +472,38 @@ const getDisplayUrl = (rawUrl: string) => {
   }
 };
 
+const toDate = (value: Date | string) =>
+  value instanceof Date ? value : new Date(value);
+
+const getDateKey = (value: Date) => value.toISOString().slice(0, 10);
+
+const formatDateLabel = (value: Date) => {
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  if (isSameDay(value, today)) {
+    return "Today";
+  }
+
+  if (isSameDay(value, yesterday)) {
+    return "Yesterday";
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    month: "long",
+    day: "numeric",
+    year: isSameYear(value, today) ? undefined : "numeric",
+  }).format(value);
+};
+
+const isSameDay = (a: Date, b: Date) =>
+  a.getFullYear() === b.getFullYear() &&
+  a.getMonth() === b.getMonth() &&
+  a.getDate() === b.getDate();
+
+const isSameYear = (a: Date, b: Date) => a.getFullYear() === b.getFullYear();
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -538,5 +600,23 @@ const styles = StyleSheet.create({
   previewStatusText: {
     fontSize: 13,
     color: "#475569",
+  },
+  dateDividerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 16,
+    marginBottom: 4,
+  },
+  dateDividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#e2e8f0",
+  },
+  dateDividerText: {
+    marginHorizontal: 12,
+    fontSize: 13,
+    color: "#475569",
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
   },
 });
