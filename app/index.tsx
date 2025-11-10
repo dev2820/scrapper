@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -16,9 +16,11 @@ import { NativeOnlyAnimatedView } from "@/components/ui/native-only-animated-vie
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Hyperlink } from "@/components/ui/hyperlink";
+import { getStoredMessages, setStoredMessages } from "@/lib/mmkv";
 
 export default function HomeScreen() {
   const [messages, setMessages] = useState<string[]>([]);
+  const [hasHydrated, setHasHydrated] = useState(false);
   const [draft, setDraft] = useState("");
   const lines = useMemo(() => Math.min(draft.split("\n").length, 6), [draft]);
   const canSend = draft.trim().length > 0;
@@ -32,6 +34,19 @@ export default function HomeScreen() {
     setMessages((prev) => [...prev, trimmed]);
     setDraft("");
   }, [draft]);
+
+  useEffect(() => {
+    setMessages(getStoredMessages());
+    setHasHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hasHydrated) {
+      return;
+    }
+
+    setStoredMessages(messages);
+  }, [messages, hasHydrated]);
 
   const handleClickLink = useCallback((url: string) => {
     Linking.openURL(url).catch((error) => {
