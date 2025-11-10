@@ -17,9 +17,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Hyperlink } from "@/components/ui/hyperlink";
 import { getStoredMessages, setStoredMessages } from "@/lib/mmkv";
+import type { Scrap } from "@/types/Scrap";
+
+const createIdentifier = () => {
+  const randomUUID = (
+    globalThis as { crypto?: { randomUUID?: () => string } }
+  ).crypto?.randomUUID;
+
+  if (typeof randomUUID === "function") {
+    return randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+};
 
 export default function HomeScreen() {
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<Scrap[]>([]);
   const [hasHydrated, setHasHydrated] = useState(false);
   const [draft, setDraft] = useState("");
   const lines = useMemo(() => Math.min(draft.split("\n").length, 6), [draft]);
@@ -31,7 +44,13 @@ export default function HomeScreen() {
       return;
     }
 
-    setMessages((prev) => [...prev, trimmed]);
+    const newMessage: Scrap = {
+      message: trimmed,
+      date: new Date(),
+      id: createIdentifier(),
+    };
+
+    setMessages((prev) => [...prev, newMessage]);
     setDraft("");
   }, [draft]);
 
@@ -74,10 +93,10 @@ export default function HomeScreen() {
                 Start chatting by typing a message below.
               </Text>
             ) : (
-              messages.map((message, index) => (
-                <View style={styles.messageBubble} key={`${index}-${message}`}>
+              messages.map((message) => (
+                <View style={styles.messageBubble} key={message.id}>
                   <Hyperlink onPress={handleClickLink}>
-                    <Text style={styles.messageText}>{message}</Text>
+                    <Text style={styles.messageText}>{message.message}</Text>
                   </Hyperlink>
                 </View>
               ))
