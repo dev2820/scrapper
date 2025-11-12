@@ -506,25 +506,12 @@ const formatDateLabel = (value: Date) => {
   const yesterday = new Date();
   yesterday.setDate(today.getDate() - 1);
 
-  if (isSameDay(value, today)) {
-    return "Today";
-  }
-
-  if (isSameDay(value, yesterday)) {
-    return "Yesterday";
-  }
-
   return new Intl.DateTimeFormat(undefined, {
     month: "long",
     day: "numeric",
     year: isSameYear(value, today) ? undefined : "numeric",
   }).format(value);
 };
-
-const isSameDay = (a: Date, b: Date) =>
-  a.getFullYear() === b.getFullYear() &&
-  a.getMonth() === b.getMonth() &&
-  a.getDate() === b.getDate();
 
 const isSameYear = (a: Date, b: Date) => a.getFullYear() === b.getFullYear();
 
