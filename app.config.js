@@ -1,0 +1,63 @@
+module.exports = {
+  expo: {
+    name: "scrapper",
+    slug: "scrapper",
+    version: "1.0.0",
+    orientation: "portrait",
+    icon: "./assets/images/icon.png",
+    scheme: "scrapper",
+    userInterfaceStyle: "automatic",
+    newArchEnabled: true,
+    ios: {
+      supportsTablet: true,
+      bundleIdentifier: "com.dev2820.scrapper",
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+      },
+      entitlements: {
+        "com.apple.security.application-groups": ["group.com.dev2820.scrapper"],
+      },
+    },
+    android: {
+      adaptiveIcon: {
+        backgroundColor: "#E6F4FE",
+        foregroundImage: "./assets/images/android-icon-foreground.png",
+        backgroundImage: "./assets/images/android-icon-background.png",
+        monochromeImage: "./assets/images/android-icon-monochrome.png",
+      },
+      edgeToEdgeEnabled: true,
+      predictiveBackGestureEnabled: false,
+      package: "com.dev2820.scrapper",
+    },
+    web: {
+      output: "static",
+      favicon: "./assets/images/favicon.png",
+      bundler: "metro",
+    },
+    plugins: [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          image: "./assets/images/splash-icon.png",
+          imageWidth: 200,
+          resizeMode: "contain",
+          backgroundColor: "#ffffff",
+          dark: {
+            backgroundColor: "#000000",
+          },
+        },
+      ],
+      "./plugins/withShareExtension",
+    ],
+    experiments: {
+      typedRoutes: true,
+      reactCompiler: true,
+    },
+    extra: {
+      eas: {
+        projectId: "9f1a17e6-836b-430c-95f9-83625142f75a",
+      },
+    },
+  },
+};

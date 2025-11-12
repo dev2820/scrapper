@@ -9,6 +9,7 @@ import {
   Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -82,6 +83,14 @@ export default function HomeScreen() {
     setMessages(getStoredMessages());
     setHasHydrated(true);
   }, []);
+
+  // Reload messages when screen comes into focus (e.g., after sharing from another app)
+  useFocusEffect(
+    useCallback(() => {
+      const storedMessages = getStoredMessages();
+      setMessages(storedMessages);
+    }, [])
+  );
 
   useEffect(() => {
     if (!hasHydrated) {
