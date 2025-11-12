@@ -538,12 +538,12 @@ const styles = StyleSheet.create({
   },
   messagesContainer: {
     flex: 1,
-    paddingHorizontal: 16,
   },
   messagesContent: {
     flexGrow: 1,
     justifyContent: "flex-end",
     paddingVertical: 20,
+    paddingHorizontal: 16,
   },
   messagesEmpty: {
     justifyContent: "center",
