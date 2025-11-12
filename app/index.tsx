@@ -57,11 +57,25 @@ export default function HomeScreen() {
     Record<string, LinkPreviewState>
   >({});
   const linkPreviewsRef = useRef(linkPreviews);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const previousMessagesLengthRef = useRef(messages.length);
+
   useEffect(() => {
     linkPreviewsRef.current = linkPreviews;
   }, [linkPreviews]);
+
   const lines = useMemo(() => Math.min(draft.split("\n").length, 6), [draft]);
   const canSend = draft.trim().length > 0;
+
+  // Auto-scroll to bottom when new messages are added
+  useEffect(() => {
+    if (messages.length > previousMessagesLengthRef.current) {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    }
+    previousMessagesLengthRef.current = messages.length;
+  }, [messages.length]);
 
   const handleSend = useCallback(() => {
     const trimmed = draft.trim();
@@ -89,7 +103,7 @@ export default function HomeScreen() {
     useCallback(() => {
       const storedMessages = getStoredMessages();
       setMessages(storedMessages);
-    }, [])
+    }, []),
   );
 
   useEffect(() => {
@@ -205,6 +219,7 @@ export default function HomeScreen() {
       >
         <View style={styles.messagesContainer}>
           <ScrollView
+            ref={scrollViewRef}
             contentContainerStyle={[
               styles.messagesContent,
               messages.length === 0 && styles.messagesEmpty,
