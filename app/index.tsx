@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -50,6 +51,7 @@ type LinkPreviewState =
   | { status: "error"; url: string };
 
 export default function HomeScreen() {
+  const router = useRouter();
   const [messages, setMessages] = useState<Scrap[]>([]);
   const [hasHydrated, setHasHydrated] = useState(false);
   const [draft, setDraft] = useState("");
@@ -114,11 +116,15 @@ export default function HomeScreen() {
     setStoredMessages(messages);
   }, [messages, hasHydrated]);
 
-  const handleClickLink = useCallback((url: string) => {
-    Linking.openURL(url).catch((error) => {
-      console.warn("Failed to open url", error);
-    });
-  }, []);
+  const handleClickLink = useCallback(
+    (url: string) => {
+      router.push({
+        pathname: "/webview",
+        params: { url },
+      });
+    },
+    [router],
+  );
 
   const getFirstLinkFromMessage = useCallback((text: string) => {
     const matches = linkify.match(text);

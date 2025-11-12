@@ -110,6 +110,15 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="share" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="webview"
+          options={{
+            headerShown: false,
+            presentation: "card",
+            animation: "slide_from_right",
+          }}
+        />
         <Stack.Screen
           name="modal"
           options={{ presentation: "modal", title: "Modal" }}
