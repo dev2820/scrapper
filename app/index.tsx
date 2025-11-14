@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { isSameYear } from "date-fns";
 import {
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
   View,
@@ -19,6 +18,7 @@ import LinkifyIt from "linkify-it";
 import { Image } from "expo-image";
 import { uuid } from "@/utils/uuid";
 import { MessageInput } from "@/components/message-input";
+import { isIOS } from "@/utils/device";
 
 const linkify = new LinkifyIt();
 
@@ -194,7 +194,7 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={styles.wrapper}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={isIOS() ? "padding" : "height"}
         keyboardVerticalOffset={24}
         className="bg-blue-50"
       >
