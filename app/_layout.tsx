@@ -18,10 +18,6 @@ import { useSharedTargetIOS } from "@/hooks/use-shared-target-ios";
 import type { Scrap } from "@/types/Scrap";
 import type { SharedMessage } from "@/types/SharedMessage";
 
-export const unstable_settings = {
-  anchor: "(tabs)",
-};
-
 const handleSharedContent = (share: SharedMessage) => {
   try {
     if (!share) return;
