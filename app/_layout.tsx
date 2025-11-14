@@ -13,14 +13,10 @@ import "../global.css";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { getStoredMessages, setStoredMessages } from "@/lib/mmkv";
-import type { Scrap } from "@/types/Scrap";
 import { uuid } from "@/utils/uuid";
 import { useSharedTargetIOS } from "@/hooks/use-shared-target-ios";
-
-type SharedMessage = {
-  data: string;
-  mimeType: "text/plain";
-};
+import type { Scrap } from "@/types/Scrap";
+import type { SharedMessage } from "@/types/SharedMessage";
 
 export const unstable_settings = {
   anchor: "(tabs)",
