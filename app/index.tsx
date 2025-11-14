@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { isSameYear } from "date-fns";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -507,8 +508,6 @@ const formatDateLabel = (value: Date) => {
     year: isSameYear(value, today) ? undefined : "numeric",
   }).format(value);
 };
-
-const isSameYear = (a: Date, b: Date) => a.getFullYear() === b.getFullYear();
 
 const styles = StyleSheet.create({
   container: {
