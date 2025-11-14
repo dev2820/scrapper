@@ -22,17 +22,7 @@ import { getStoredMessages, setStoredMessages } from "@/lib/mmkv";
 import type { Scrap } from "@/types/Scrap";
 import LinkifyIt from "linkify-it";
 import { Image } from "expo-image";
-
-const createIdentifier = () => {
-  const randomUUID = (globalThis as { crypto?: { randomUUID?: () => string } })
-    .crypto?.randomUUID;
-
-  if (typeof randomUUID === "function") {
-    return randomUUID();
-  }
-
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-};
+import { uuid } from "@/utils/uuid";
 
 const linkify = new LinkifyIt();
 
@@ -87,7 +77,7 @@ export default function HomeScreen() {
     const newMessage: Scrap = {
       message: trimmed,
       date: new Date(),
-      id: createIdentifier(),
+      id: uuid(),
     };
 
     setMessages((prev) => [...prev, newMessage]);
