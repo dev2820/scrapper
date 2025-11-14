@@ -26,31 +26,31 @@ export const unstable_settings = {
   anchor: "(tabs)",
 };
 
+const handleSharedContent = (share: SharedMessage) => {
+  try {
+    if (!share) return;
+    const sharedText = share.data;
+
+    if (!isString(sharedText)) return;
+    if (isEmpty(sharedText)) return;
+
+    const newScrap: Scrap = {
+      message: sharedText.trim(),
+      date: new Date(),
+      id: uuid(),
+    };
+
+    // FIXME: storedmessage를 다루기 위한 CRUD 인터페이스가 필요함
+    const existingMessages = getStoredMessages();
+    const updatedMessages = [...existingMessages, newScrap];
+    setStoredMessages(updatedMessages);
+  } catch (error) {
+    console.error("❌ Failed to handle shared content:", error);
+  }
+};
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-
-  const handleSharedContent = (share: SharedMessage) => {
-    try {
-      if (!share) return;
-      const sharedText = share.data;
-
-      if (!isString(sharedText)) return;
-      if (isEmpty(sharedText)) return;
-
-      const newScrap: Scrap = {
-        message: sharedText.trim(),
-        date: new Date(),
-        id: uuid(),
-      };
-
-      // FIXME: storedmessage를 다루기 위한 CRUD 인터페이스가 필요함
-      const existingMessages = getStoredMessages();
-      const updatedMessages = [...existingMessages, newScrap];
-      setStoredMessages(updatedMessages);
-    } catch (error) {
-      console.error("❌ Failed to handle shared content:", error);
-    }
-  };
 
   useSharedTargetIOS(handleSharedContent);
 
