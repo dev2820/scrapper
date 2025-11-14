@@ -499,8 +499,6 @@ const getDateKey = (value: Date) => value.toISOString().slice(0, 10);
 
 const formatDateLabel = (value: Date) => {
   const today = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
 
   return new Intl.DateTimeFormat(undefined, {
     month: "long",
