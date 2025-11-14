@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { View, StyleSheet, Pressable } from "react-native";
+import { View, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { Icon } from "@/components/ui/icon";
@@ -16,40 +16,18 @@ export default function WebViewScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      <View style={styles.header}>
-        <Pressable style={styles.closeButton} onPress={() => router.back()}>
+    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+      <View className="flex-row items-center justify-end px-3 py-1 border-b border-slate-200">
+        <Pressable className="p-2" onPress={() => router.back()}>
           <Icon as={X} size={24} className="text-foreground" />
         </Pressable>
       </View>
       <WebView
         source={{ uri: url }}
-        style={styles.webview}
+        className="flex-1"
         startInLoadingState
         allowsBackForwardNavigationGestures
       />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e2e8f0",
-  },
-  closeButton: {
-    padding: 8,
-  },
-  webview: {
-    flex: 1,
-  },
-});
