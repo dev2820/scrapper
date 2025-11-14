@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { isSameYear } from "date-fns";
 import {
   KeyboardAvoidingView,
@@ -12,18 +12,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
-import { Icon } from "@/components/ui/icon";
-import { SendHorizonal } from "lucide-react-native";
-import { NativeOnlyAnimatedView } from "@/components/ui/native-only-animated-view";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import { Hyperlink } from "@/components/ui/hyperlink";
 import { getStoredMessages, setStoredMessages } from "@/lib/mmkv";
 import type { Scrap } from "@/types/Scrap";
 import LinkifyIt from "linkify-it";
 import { Image } from "expo-image";
 import { uuid } from "@/utils/uuid";
+import { MessageInput } from "@/components/message-input";
 
 const linkify = new LinkifyIt();
 
@@ -44,7 +39,6 @@ export default function HomeScreen() {
   const router = useRouter();
   const [messages, setMessages] = useState<Scrap[]>([]);
   const [hasHydrated, setHasHydrated] = useState(false);
-  const [draft, setDraft] = useState("");
   const [linkPreviews, setLinkPreviews] = useState<
     Record<string, LinkPreviewState>
   >({});
@@ -56,9 +50,6 @@ export default function HomeScreen() {
     linkPreviewsRef.current = linkPreviews;
   }, [linkPreviews]);
 
-  const lines = useMemo(() => Math.min(draft.split("\n").length, 6), [draft]);
-  const canSend = draft.trim().length > 0;
-
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
     if (messages.length > previousMessagesLengthRef.current) {
@@ -69,21 +60,15 @@ export default function HomeScreen() {
     previousMessagesLengthRef.current = messages.length;
   }, [messages.length]);
 
-  const handleSend = useCallback(() => {
-    const trimmed = draft.trim();
-    if (!trimmed) {
-      return;
-    }
-
+  const handleSend = useCallback((message: string) => {
     const newMessage: Scrap = {
-      message: trimmed,
+      message: message,
       date: new Date(),
       id: uuid(),
     };
 
     setMessages((prev) => [...prev, newMessage]);
-    setDraft("");
-  }, [draft]);
+  }, []);
 
   useEffect(() => {
     setMessages(getStoredMessages());
@@ -275,35 +260,7 @@ export default function HomeScreen() {
             )}
           </ScrollView>
         </View>
-        <NativeOnlyAnimatedView
-          className="flex flex-row py-2 px-2"
-          style={[{ height: lines * 24 + 32 }]}
-        >
-          <Textarea
-            className={cn(
-              "text-4 leading-normal flex-1 min-h-6 border-1 border-border shadow-lg rounded-3xl bg-white px-4",
-            )}
-            placeholder="Type a message"
-            numberOfLines={1}
-            value={draft}
-            onChangeText={setDraft}
-            submitBehavior="newline"
-          />
-          <Button
-            // variant="ghost"
-            size="icon"
-            className="ml-2 self-end rounded-full"
-            onPress={handleSend}
-            accessibilityLabel="Send message"
-            disabled={!canSend}
-          >
-            <Icon
-              as={SendHorizonal}
-              size={20}
-              className="text-primary-foreground"
-            />
-          </Button>
-        </NativeOnlyAnimatedView>
+        <MessageInput onSend={handleSend} />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
