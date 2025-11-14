@@ -1,21 +1,10 @@
-import { useCallback } from "react";
 import { KeyboardAvoidingView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useCreateMessage } from "@/hooks/message/use-create-message";
 import { MessageInput } from "@/components/message-input";
 import { MessageView } from "@/components/message-view";
 import { isIOS } from "@/utils/device";
 
 export default function HomeScreen() {
-  const createMessage = useCreateMessage();
-
-  const handleSend = useCallback(
-    (message: string) => {
-      createMessage(message);
-    },
-    [createMessage]
-  );
-
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -25,7 +14,7 @@ export default function HomeScreen() {
         className="bg-blue-50"
       >
         <MessageView />
-        <MessageInput onSend={handleSend} />
+        <MessageInput />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
