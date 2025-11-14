@@ -8,6 +8,7 @@ import { StatusBar } from "expo-status-bar";
 import { PortalHost } from "@rn-primitives/portal";
 import { useEffect } from "react";
 import * as Linking from "expo-linking";
+import { isEmpty, isString } from "es-toolkit/compat";
 
 import "react-native-reanimated";
 import "../global.css";
@@ -24,33 +25,26 @@ export const unstable_settings = {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
-  // Handle deep links from ShareExtension
   useEffect(() => {
-    // Handle URL when app is opened from a link
+    // share target feature for iOS
     const handleURL = ({ url }: { url: string }) => {
-      console.log("🔗 Received URL:", url);
       const parsed = Linking.parse(url);
-      console.log("🔗 Parsed URL:", parsed);
 
       if (parsed.hostname === "share" && parsed.queryParams?.text) {
         const sharedText = decodeURIComponent(
           parsed.queryParams.text as string,
         );
-        console.log("✅ Got shared text from URL:", sharedText);
 
         handleSharedContent({ data: sharedText, mimeType: "text/plain" });
       }
     };
 
-    // Get initial URL (when app is opened from closed state)
     Linking.getInitialURL().then((url) => {
       if (url) {
-        console.log("🔗 Initial URL:", url);
         handleURL({ url });
       }
     });
 
-    // Listen for URL events (when app is already open)
     const subscription = Linking.addEventListener("url", handleURL);
 
     return () => {
@@ -58,23 +52,13 @@ export default function RootLayout() {
     };
   }, []);
 
-  const handleSharedContent = (share: any) => {
+  const handleSharedContent = (share: { data: unknown }) => {
     try {
-      if (!share) {
-        console.log("ERROR: Share is null or undefined");
-        return;
-      }
-
-      // Extract text or URL from the shared content
+      if (!share) return;
       const sharedText = share.data;
 
-      console.log("Extracted text:", sharedText);
-      console.log("Text type:", typeof sharedText);
-
-      if (!sharedText || typeof sharedText !== "string") {
-        console.log("ERROR: Invalid shared text");
-        return;
-      }
+      if (!isString(sharedText)) return;
+      if (isEmpty(sharedText)) return;
 
       // Create a new scrap from the shared content
       const newScrap: Scrap = {
@@ -83,14 +67,10 @@ export default function RootLayout() {
         id: uuid(),
       };
 
-      console.log("Creating new scrap:", newScrap);
-
       // Get existing messages and add the new one
       const existingMessages = getStoredMessages();
       const updatedMessages = [...existingMessages, newScrap];
       setStoredMessages(updatedMessages);
-
-      console.log("✅ Scrap saved successfully!");
     } catch (error) {
       console.error("❌ Failed to handle shared content:", error);
     }
