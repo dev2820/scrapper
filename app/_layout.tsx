@@ -18,6 +18,11 @@ import { getStoredMessages, setStoredMessages } from "@/lib/mmkv";
 import type { Scrap } from "@/types/Scrap";
 import { uuid } from "@/utils/uuid";
 
+type SharedMessage = {
+  data: string;
+  mimeType: "text/plain";
+};
+
 export const unstable_settings = {
   anchor: "(tabs)",
 };
@@ -35,7 +40,10 @@ export default function RootLayout() {
           parsed.queryParams.text as string,
         );
 
-        handleSharedContent({ data: sharedText, mimeType: "text/plain" });
+        handleSharedContent({
+          data: sharedText,
+          mimeType: "text/plain",
+        } satisfies SharedMessage);
       }
     };
 
@@ -52,7 +60,7 @@ export default function RootLayout() {
     };
   }, []);
 
-  const handleSharedContent = (share: { data: unknown }) => {
+  const handleSharedContent = (share: SharedMessage) => {
     try {
       if (!share) return;
       const sharedText = share.data;
@@ -60,14 +68,13 @@ export default function RootLayout() {
       if (!isString(sharedText)) return;
       if (isEmpty(sharedText)) return;
 
-      // Create a new scrap from the shared content
       const newScrap: Scrap = {
         message: sharedText.trim(),
         date: new Date(),
         id: uuid(),
       };
 
-      // Get existing messages and add the new one
+      // FIXME: storedmessage를 다루기 위한 CRUD 인터페이스가 필요함
       const existingMessages = getStoredMessages();
       const updatedMessages = [...existingMessages, newScrap];
       setStoredMessages(updatedMessages);
