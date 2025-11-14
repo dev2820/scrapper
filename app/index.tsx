@@ -8,15 +8,13 @@ import {
   Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
 import { Hyperlink } from "@/components/ui/hyperlink";
-import { getStoredMessages, setStoredMessages } from "@/lib/mmkv";
-import type { Scrap } from "@/types/Scrap";
+import { useMessages } from "@/hooks/message/use-messages";
+import { useCreateMessage } from "@/hooks/message/use-create-message";
 import LinkifyIt from "linkify-it";
 import { Image } from "expo-image";
-import { uuid } from "@/utils/uuid";
 import { MessageInput } from "@/components/message-input";
 import { isIOS } from "@/utils/device";
 
@@ -37,8 +35,8 @@ type LinkPreviewState =
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [messages, setMessages] = useState<Scrap[]>([]);
-  const [hasHydrated, setHasHydrated] = useState(false);
+  const messages = useMessages();
+  const createMessage = useCreateMessage();
   const [linkPreviews, setLinkPreviews] = useState<
     Record<string, LinkPreviewState>
   >({});
@@ -60,36 +58,12 @@ export default function HomeScreen() {
     previousMessagesLengthRef.current = messages.length;
   }, [messages.length]);
 
-  const handleSend = useCallback((message: string) => {
-    const newMessage: Scrap = {
-      message: message,
-      date: new Date(),
-      id: uuid(),
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
-  }, []);
-
-  useEffect(() => {
-    setMessages(getStoredMessages());
-    setHasHydrated(true);
-  }, []);
-
-  // Reload messages when screen comes into focus (e.g., after sharing from another app)
-  useFocusEffect(
-    useCallback(() => {
-      const storedMessages = getStoredMessages();
-      setMessages(storedMessages);
-    }, []),
+  const handleSend = useCallback(
+    (message: string) => {
+      createMessage(message);
+    },
+    [createMessage]
   );
-
-  useEffect(() => {
-    if (!hasHydrated) {
-      return;
-    }
-
-    setStoredMessages(messages);
-  }, [messages, hasHydrated]);
 
   const handleClickLink = useCallback(
     (url: string) => {

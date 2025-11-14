@@ -1,0 +1,91 @@
+import { create } from "zustand";
+import { persist, createJSONStorage, StateStorage } from "zustand/middleware";
+import type { Scrap } from "@/types/Scrap";
+import { storage as mmkvStorage } from "@/lib/mmkv";
+import { uuid } from "@/utils/uuid";
+
+interface MessagesState {
+  messages: Scrap[];
+}
+
+interface MessagesActions {
+  addMessage: (message: Scrap) => void;
+  updateMessage: (id: string, updates: Partial<Scrap>) => void;
+  deleteMessage: (id: string) => void;
+  setMessages: (messages: Scrap[]) => void;
+}
+
+type MessagesStore = MessagesState & MessagesActions;
+
+/**
+ * MMKV storage adapter for Zustand persist middleware
+ */
+const zustandMMKVStorage: StateStorage = {
+  getItem: (name) => {
+    const value = mmkvStorage.getString(name);
+    return value ?? null;
+  },
+  setItem: (name, value) => {
+    mmkvStorage.set(name, value);
+  },
+  removeItem: (name) => {
+    mmkvStorage.remove(name);
+  },
+};
+
+/**
+ * Zustand store for messages with MMKV persistence.
+ * All components using this store share the same reactive state.
+ * Automatically syncs to MMKV on every state change.
+ *
+ * When migrating to TanStack Query:
+ * - Replace this store with useQuery/useMutation hooks
+ * - Keep the same API surface for consumers
+ */
+export const useMessagesStore = create<MessagesStore>()(
+  persist(
+    (set, get) => ({
+      messages: [],
+
+      addMessage: (message) => {
+        set({ messages: [...get().messages, message] });
+      },
+
+      updateMessage: (id, updates) => {
+        set({
+          messages: get().messages.map((msg) =>
+            msg.id === id ? { ...msg, ...updates } : msg,
+          ),
+        });
+      },
+
+      deleteMessage: (id) => {
+        set({
+          messages: get().messages.filter((msg) => msg.id !== id),
+        });
+      },
+
+      setMessages: (messages) => {
+        set({ messages });
+      },
+    }),
+    {
+      name: "messages-storage",
+      storage: createJSONStorage(() => zustandMMKVStorage),
+    },
+  ),
+);
+
+/**
+ * Helper function to create a Scrap object from text.
+ *
+ * @example
+ * const message = createMessageObject("Hello world");
+ */
+export const createMessageFromText = (text: string): Scrap => {
+  return {
+    message: text.trim(),
+    date: new Date(),
+    id: uuid(),
+  };
+};
