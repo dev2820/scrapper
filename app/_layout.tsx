@@ -15,17 +15,7 @@ import "../global.css";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { getStoredMessages, setStoredMessages } from "@/lib/mmkv";
 import type { Scrap } from "@/types/Scrap";
-
-const createIdentifier = () => {
-  const randomUUID = (globalThis as { crypto?: { randomUUID?: () => string } })
-    .crypto?.randomUUID;
-
-  if (typeof randomUUID === "function") {
-    return randomUUID();
-  }
-
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-};
+import { uuid } from "@/utils/uuid";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -90,7 +80,7 @@ export default function RootLayout() {
       const newScrap: Scrap = {
         message: sharedText.trim(),
         date: new Date(),
-        id: createIdentifier(),
+        id: uuid(),
       };
 
       console.log("Creating new scrap:", newScrap);
