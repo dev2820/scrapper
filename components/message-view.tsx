@@ -11,6 +11,7 @@ import { MessageMenu } from "@/components/message-menu";
 import { useDeleteMessage } from "@/hooks/message/use-delete-message";
 import { Message } from "@/types/Message";
 import { OpenGraphLoader } from "./open-graph-loader";
+import { LinkPreviewCard } from "./link-preview-card";
 
 const linkify = new LinkifyIt();
 
@@ -99,7 +100,7 @@ export function MessageView() {
                       url={getFirstLinkFromMessage(message.text)!}
                       fallback={null}
                     >
-                      {(og) => <Text>{og.title}</Text>}
+                      {(og) => <LinkPreviewCard {...og} />}
                     </OpenGraphLoader>
                   )}
                 </View>

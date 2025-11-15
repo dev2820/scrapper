@@ -15,71 +15,56 @@ export type LinkPreviewState =
   | { status: "ready"; url: string; data: LinkPreviewData }
   | { status: "error"; url: string };
 
-type LinkPreviewCardProps = {
-  preview: LinkPreviewState;
-  targetUrl: string;
-  onOpen: (url: string) => void;
+type LinkPreviewCardProps = LinkPreviewData & {
+  onPress?: (url: string) => void;
 };
 
 export function LinkPreviewCard({
-  preview,
-  targetUrl,
-  onOpen,
+  url,
+  title,
+  description,
+  siteName,
+  image,
+  onPress,
 }: LinkPreviewCardProps) {
-  if (preview.status === "ready") {
-    const { data } = preview;
-    const hasImage = Boolean(data.image);
-    const siteName = data.siteName ?? getHostname(data.url);
-    const displayUrl = getDisplayUrl(data.url);
-
-    return (
-      <Pressable
-        style={[
-          styles.previewCard,
-          hasImage ? styles.previewCardWithImage : undefined,
-        ]}
-        onPress={() => onOpen(data.url)}
-        accessibilityRole="link"
-      >
-        {hasImage ? (
-          <Image
-            source={{ uri: data.image as string }}
-            style={styles.previewImage}
-            contentFit="cover"
-          />
-        ) : null}
-        <View style={styles.previewTextContent}>
-          {siteName ? (
-            <Text style={styles.previewSite} numberOfLines={1}>
-              {siteName}
-            </Text>
-          ) : null}
-          <Text style={styles.previewTitle} numberOfLines={2}>
-            {data.title ?? displayUrl}
-          </Text>
-          {data.description ? (
-            <Text style={styles.previewDescription} numberOfLines={3}>
-              {data.description}
-            </Text>
-          ) : null}
-          <Text style={styles.previewUrl} numberOfLines={1}>
-            {displayUrl}
-          </Text>
-        </View>
-      </Pressable>
-    );
-  }
-
-  const message =
-    preview.status === "loading" ? "Fetching preview…" : "Preview unavailable";
+  const hasImage = Boolean(image);
+  const displaySiteName = siteName ?? getHostname(url);
+  const displayUrl = getDisplayUrl(url);
 
   return (
     <Pressable
-      style={[styles.previewCard, styles.previewPlaceholder]}
-      onPress={() => onOpen(targetUrl)}
+      style={[
+        styles.previewCard,
+        hasImage ? styles.previewCardWithImage : undefined,
+      ]}
+      onPress={() => onPress?.(url)}
       accessibilityRole="link"
     >
-      <Text style={styles.previewStatusText}>{message}</Text>
+      {hasImage ? (
+        <Image
+          source={{ uri: image as string }}
+          style={styles.previewImage}
+          contentFit="cover"
+        />
+      ) : null}
+      <View style={styles.previewTextContent}>
+        {displaySiteName ? (
+          <Text style={styles.previewSite} numberOfLines={1}>
+            {displaySiteName}
+          </Text>
+        ) : null}
+        <Text style={styles.previewTitle} numberOfLines={2}>
+          {title ?? displayUrl}
+        </Text>
+        {description ? (
+          <Text style={styles.previewDescription} numberOfLines={3}>
+            {description}
+          </Text>
+        ) : null}
+        <Text style={styles.previewUrl} numberOfLines={1}>
+          {displayUrl}
+        </Text>
+      </View>
     </Pressable>
   );
 }
@@ -150,13 +135,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#2563eb",
     marginTop: 6,
-  },
-  previewPlaceholder: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  previewStatusText: {
-    fontSize: 13,
-    color: "#475569",
   },
 });

@@ -72,6 +72,16 @@ export const useMessagesStore = create<MessagesStore>()(
     {
       name: "messages-storage",
       storage: createJSONStorage(() => zustandMMKVStorage),
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as Partial<MessagesState>;
+        return {
+          ...currentState,
+          messages: (persisted.messages ?? []).map((msg) => ({
+            ...msg,
+            date: new Date(msg.date),
+          })),
+        };
+      },
     },
   ),
 );
