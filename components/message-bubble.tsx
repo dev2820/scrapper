@@ -29,7 +29,6 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     return matches[0].url;
   }, [message.text]);
 
-  console.log(link);
   const handleClickLink = useCallback(
     (url: string) => {
       router.push({

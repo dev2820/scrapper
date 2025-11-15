@@ -19,51 +19,29 @@ type LinkPreviewData = {
 const cache = new Map<string, Promise<LinkPreviewData> | LinkPreviewData>();
 
 /**
- * Fetches Open Graph data from a URL (uncached).
+ * Fetches Open Graph data from a URL using api.ogfetch.com
  * Use readOpenGraphData for cached + Suspense-compatible version.
  */
 const fetchOpenGraphData = async (url: string): Promise<OpenGraphData> => {
-  console.log("letsgo start", url);
-  const response = await fetch(url, {
+  const apiUrl = `https://api.ogfetch.com/preview?url=${encodeURIComponent(url)}`;
+
+  const response = await fetch(apiUrl, {
     headers: {
-      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      Accept: "application/json",
     },
   });
 
   if (!response.ok) {
-    console.log("letsgo failed", url);
-    throw new Error(`Failed to fetch Open Graph data for ${url}`);
+    throw new Error(`OG API returned ${response.status}: ${response.statusText}`);
   }
 
-  const html = await response.text();
+  const data = await response.json();
 
-  const title =
-    getMetaContent(html, "og:title") ??
-    getMetaContent(html, "twitter:title") ??
-    getTitleTag(html);
-
-  const description =
-    getMetaContent(html, "og:description") ??
-    getMetaContent(html, "twitter:description") ??
-    getMetaContent(html, "description");
-
-  const siteName =
-    getMetaContent(html, "og:site_name") ?? getHostname(url) ?? undefined;
-
-  const imageURL =
-    resolveToAbsoluteUrl(
-      getMetaContent(html, "og:image") ??
-        getMetaContent(html, "og:image:secure_url") ??
-        getMetaContent(html, "twitter:image"),
-      url,
-    ) ?? undefined;
-
-  console.log("letsgo", title, description, siteName);
   return {
-    title: title ? decodeEntities(title) : undefined,
-    description: description ? decodeEntities(description) : undefined,
-    siteName: siteName ? decodeEntities(siteName) : undefined,
-    imageURL,
+    title: data.title || data.ogTitle || undefined,
+    description: data.description || data.ogDescription || undefined,
+    siteName: data.siteName || data.ogSiteName || undefined,
+    imageURL: data.image || data.ogImage || undefined,
   };
 };
 
@@ -74,17 +52,38 @@ const fetchOpenGraphData = async (url: string): Promise<OpenGraphData> => {
  */
 function readOpenGraphData(url: string): LinkPreviewData {
   if (!cache.has(url)) {
-    const promise = fetchOpenGraphData(url).then((ogData) => {
-      const previewData: LinkPreviewData = {
-        url,
-        title: ogData.title,
-        description: ogData.description,
-        siteName: ogData.siteName,
-        image: ogData.imageURL,
-      };
-      cache.set(url, previewData);
-      return previewData;
-    });
+    const promise = fetchOpenGraphData(url)
+      .then((ogData) => {
+        const previewData: LinkPreviewData = {
+          url,
+          title: ogData.title,
+          description: ogData.description,
+          siteName: ogData.siteName,
+          image: ogData.imageURL,
+        };
+        cache.set(url, previewData);
+        return previewData;
+      })
+      .catch((error) => {
+        // Remove failed fetch from cache to allow retry
+        cache.delete(url);
+
+        // Log error in development
+        if (__DEV__) {
+          console.log(`[OpenGraph] Failed to fetch preview for ${url}:`, error.message);
+        }
+
+        // Return fallback data instead of crashing
+        const fallbackData: LinkPreviewData = {
+          url,
+          title: undefined,
+          description: undefined,
+          siteName: undefined,
+          image: undefined,
+        };
+        cache.set(url, fallbackData);
+        return fallbackData;
+      });
     cache.set(url, promise);
     throw promise;
   }
@@ -97,64 +96,6 @@ function readOpenGraphData(url: string): LinkPreviewData {
 
   return cached;
 }
-
-const escapeRegex = (value: string) =>
-  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-const getMetaContent = (html: string, key: string): string | undefined => {
-  const metaRegex = new RegExp(
-    `<meta[^>]+(?:property|name)=["']${escapeRegex(key)}["'][^>]*>`,
-    "i",
-  );
-  const match = html.match(metaRegex);
-  if (!match) {
-    return undefined;
-  }
-
-  const contentMatch = match[0].match(/content=["']([^"']+)["']/i);
-  return contentMatch ? contentMatch[1].trim() : undefined;
-};
-
-const getTitleTag = (html: string): string | undefined => {
-  const match = html.match(/<title[^>]*>([^<]*)<\/title>/i);
-  return match ? match[1].trim() : undefined;
-};
-
-const decodeEntities = (value: string): string =>
-  value
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&#x27;/gi, "'");
-
-const getHostname = (rawUrl: string): string | undefined => {
-  try {
-    return new URL(rawUrl).hostname.replace(/^www\./, "");
-  } catch {
-    return undefined;
-  }
-};
-
-const resolveToAbsoluteUrl = (
-  value: string | undefined,
-  baseUrl: string,
-): string | undefined => {
-  if (!value) {
-    return undefined;
-  }
-
-  if (value.startsWith("data:")) {
-    return value;
-  }
-
-  try {
-    return new URL(value, baseUrl).toString();
-  } catch {
-    return undefined;
-  }
-};
 
 type OpenGraphLoaderProps = {
   url: string;
