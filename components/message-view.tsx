@@ -1,5 +1,5 @@
 import { useEffect, useRef, Fragment } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { isSameDay } from "date-fns";
 import { Text } from "@/components/ui/text";
 import { useMessages } from "@/hooks/message/use-messages";
@@ -23,10 +23,10 @@ export function MessageView() {
   }, [messages.length]);
 
   return (
-    <View style={styles.messagesContainer}>
+    <View className="flex-1">
       <ScrollView
         ref={scrollViewRef}
-        contentContainerStyle={[styles.messagesContent]}
+        contentContainerClassName="flex-grow justify-end py-5 px-4"
       >
         {messages.length === 0 ? (
           <EmptyFallback />
@@ -53,28 +53,8 @@ export function MessageView() {
 
 function EmptyFallback() {
   return (
-    <Text style={styles.placeholderText}>
+    <Text className="text-center text-slate-400 text-base">
       Start chatting by typing a message below.
     </Text>
   );
 }
-
-const styles = StyleSheet.create({
-  messagesContainer: {
-    flex: 1,
-  },
-  messagesContent: {
-    flexGrow: 1,
-    justifyContent: "flex-end",
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-  },
-  messagesEmpty: {
-    justifyContent: "center",
-  },
-  placeholderText: {
-    textAlign: "center",
-    color: "#94a3b8",
-    fontSize: 16,
-  },
-});
