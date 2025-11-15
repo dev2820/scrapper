@@ -8,6 +8,9 @@ import { Image } from "expo-image";
 import { useMessages } from "@/hooks/message/use-messages";
 import LinkifyIt from "linkify-it";
 import { DateDivider } from "@/components/date-divider";
+import { MessageMenu } from "@/components/message-menu";
+import { useDeleteMessage } from "@/hooks/message/use-delete-message";
+import { Message } from "@/types/Message";
 
 const linkify = new LinkifyIt();
 
@@ -33,6 +36,11 @@ export function MessageView() {
   const linkPreviewsRef = useRef(linkPreviews);
   const scrollViewRef = useRef<ScrollView>(null);
   const previousMessagesLengthRef = useRef(messages.length);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
+    null,
+  );
+  const deleteMessage = useDeleteMessage();
 
   useEffect(() => {
     linkPreviewsRef.current = linkPreviews;
@@ -58,10 +66,14 @@ export function MessageView() {
     [router],
   );
 
-  const handleLongPressMessage = useCallback((messageId: string, text: string) => {
-    // TODO: Implement message actions (copy, delete, etc.)
-    console.log("Long pressed message:", messageId, text);
+  const handleLongPressMessage = useCallback((messageId: string) => {
+    setSelectedMessageId(messageId);
+    setMenuOpen(true);
   }, []);
+
+  const handleDeleteMessage = (id: Message["id"]) => {
+    deleteMessage(id);
+  };
 
   const getFirstLinkFromMessage = useCallback((text: string) => {
     if (text === undefined) return null;
@@ -173,7 +185,7 @@ export function MessageView() {
                 )}
                 <View style={styles.messageGroup}>
                   <Pressable
-                    onLongPress={() => handleLongPressMessage(message.id, message.text)}
+                    onLongPress={() => handleLongPressMessage(message.id)}
                     style={styles.messageBubble}
                   >
                     <Hyperlink onPress={handleClickLink}>
@@ -205,6 +217,19 @@ export function MessageView() {
           })
         )}
       </ScrollView>
+
+      <MessageMenu open={menuOpen} onOpenChange={setMenuOpen}>
+        <Pressable
+          onPress={() => {
+            if (selectedMessageId) {
+              handleDeleteMessage(selectedMessageId);
+            }
+            setMenuOpen(false);
+          }}
+        >
+          <Text>Delete</Text>
+        </Pressable>
+      </MessageMenu>
     </View>
   );
 }
