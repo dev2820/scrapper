@@ -10,10 +10,6 @@ import { DateDivider } from "@/components/date-divider";
 import { MessageMenu } from "@/components/message-menu";
 import { useDeleteMessage } from "@/hooks/message/use-delete-message";
 import { Message } from "@/types/Message";
-import {
-  type LinkPreviewData,
-  type LinkPreviewState,
-} from "@/components/link-preview-card";
 import { OpenGraphLoader } from "./open-graph-loader";
 
 const linkify = new LinkifyIt();
@@ -21,10 +17,7 @@ const linkify = new LinkifyIt();
 export function MessageView() {
   const router = useRouter();
   const messages = useMessages();
-  const [linkPreviews, setLinkPreviews] = useState<
-    Record<string, LinkPreviewState>
-  >({});
-  const linkPreviewsRef = useRef(linkPreviews);
+
   const scrollViewRef = useRef<ScrollView>(null);
   const previousMessagesLengthRef = useRef(messages.length);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -32,10 +25,6 @@ export function MessageView() {
     null,
   );
   const deleteMessage = useDeleteMessage();
-
-  useEffect(() => {
-    linkPreviewsRef.current = linkPreviews;
-  }, [linkPreviews]);
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
@@ -75,84 +64,6 @@ export function MessageView() {
     }
     return matches[0].url;
   }, []);
-
-  useEffect(() => {
-    const pendingFetches: { id: string; url: string }[] = [];
-
-    messages.forEach((message) => {
-      const firstUrl = getFirstLinkFromMessage(message.text);
-      if (!firstUrl) {
-        return;
-      }
-
-      const existing = linkPreviewsRef.current[message.id];
-      if (
-        existing &&
-        existing.url === firstUrl &&
-        (existing.status === "loading" || existing.status === "ready")
-      ) {
-        return;
-      }
-
-      pendingFetches.push({ id: message.id, url: firstUrl });
-    });
-
-    if (pendingFetches.length === 0) {
-      return;
-    }
-
-    setLinkPreviews((prev) => {
-      const next = { ...prev };
-      pendingFetches.forEach(({ id, url }) => {
-        next[id] = { status: "loading", url };
-      });
-      return next;
-    });
-
-    let cancelled = false;
-
-    pendingFetches.forEach(({ id, url }) => {
-      fetchOpenGraphMetadata(url)
-        .then((data) => {
-          if (cancelled) {
-            return;
-          }
-
-          setLinkPreviews((prev) => {
-            const current = prev[id];
-            if (!current || current.url !== url) {
-              return prev;
-            }
-
-            return {
-              ...prev,
-              [id]: { status: "ready", url, data },
-            };
-          });
-        })
-        .catch(() => {
-          if (cancelled) {
-            return;
-          }
-
-          setLinkPreviews((prev) => {
-            const current = prev[id];
-            if (!current || current.url !== url) {
-              return prev;
-            }
-
-            return {
-              ...prev,
-              [id]: { status: "error", url },
-            };
-          });
-        });
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [messages, getFirstLinkFromMessage]);
 
   return (
     <View style={styles.messagesContainer}>
@@ -222,101 +133,6 @@ const formatDateLabel = (value: Date) => {
     day: "numeric",
     year: isSameYear(value, today) ? undefined : "numeric",
   }).format(value);
-};
-const getHostname = (rawUrl: string) => {
-  try {
-    return new URL(rawUrl).hostname.replace(/^www\./, "");
-  } catch {
-    return undefined;
-  }
-};
-
-const fetchOpenGraphMetadata = async (
-  url: string,
-): Promise<LinkPreviewData> => {
-  const response = await fetch(url, {
-    headers: {
-      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch preview for ${url}`);
-  }
-
-  const html = await response.text();
-  const title =
-    getMetaContent(html, "og:title") ??
-    getMetaContent(html, "twitter:title") ??
-    getTitleTag(html);
-  const description =
-    getMetaContent(html, "og:description") ??
-    getMetaContent(html, "twitter:description") ??
-    getMetaContent(html, "description");
-  const siteName =
-    getMetaContent(html, "og:site_name") ?? getHostname(url) ?? undefined;
-  const imageUrl =
-    resolveToAbsoluteUrl(
-      getMetaContent(html, "og:image") ??
-        getMetaContent(html, "og:image:secure_url") ??
-        getMetaContent(html, "twitter:image"),
-      url,
-    ) ?? undefined;
-
-  return {
-    url,
-    title: title ? decodeEntities(title) : undefined,
-    description: description ? decodeEntities(description) : undefined,
-    siteName: siteName ? decodeEntities(siteName) : undefined,
-    image: imageUrl,
-  };
-};
-
-const escapeRegex = (value: string) =>
-  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-const getMetaContent = (html: string, key: string) => {
-  const metaRegex = new RegExp(
-    `<meta[^>]+(?:property|name)=["']${escapeRegex(key)}["'][^>]*>`,
-    "i",
-  );
-  const match = html.match(metaRegex);
-  if (!match) {
-    return undefined;
-  }
-
-  const contentMatch = match[0].match(/content=["']([^"']+)["']/i);
-  return contentMatch ? contentMatch[1].trim() : undefined;
-};
-
-const getTitleTag = (html: string) => {
-  const match = html.match(/<title[^>]*>([^<]*)<\/title>/i);
-  return match ? match[1].trim() : undefined;
-};
-
-const decodeEntities = (value: string) =>
-  value
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&#x27;/gi, "'");
-
-const resolveToAbsoluteUrl = (value: string | undefined, baseUrl: string) => {
-  if (!value) {
-    return undefined;
-  }
-
-  if (value.startsWith("data:")) {
-    return value;
-  }
-
-  try {
-    return new URL(value, baseUrl).toString();
-  } catch {
-    return undefined;
-  }
 };
 
 function EmptyFallback() {
