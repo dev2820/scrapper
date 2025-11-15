@@ -1,4 +1,4 @@
-export type Scrap = {
+export type Message = {
   message: string;
   date: Date;
   id: string;

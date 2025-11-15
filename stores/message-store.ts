@@ -1,18 +1,18 @@
 import { create } from "zustand";
 import { persist, createJSONStorage, StateStorage } from "zustand/middleware";
-import type { Scrap } from "@/types/Scrap";
+import type { Message } from "@/types/Message";
 import { storage as mmkvStorage } from "@/lib/mmkv";
 import { uuid } from "@/utils/uuid";
 
 interface MessagesState {
-  messages: Scrap[];
+  messages: Message[];
 }
 
 interface MessagesActions {
-  addMessage: (message: Scrap) => void;
-  updateMessage: (id: string, updates: Partial<Scrap>) => void;
+  addMessage: (message: Message) => void;
+  updateMessage: (id: string, updates: Partial<Message>) => void;
   deleteMessage: (id: string) => void;
-  setMessages: (messages: Scrap[]) => void;
+  setMessages: (messages: Message[]) => void;
 }
 
 type MessagesStore = MessagesState & MessagesActions;
@@ -77,12 +77,12 @@ export const useMessagesStore = create<MessagesStore>()(
 );
 
 /**
- * Helper function to create a Scrap object from text.
+ * Helper function to create a Message object from text.
  *
  * @example
  * const message = createMessageObject("Hello world");
  */
-export const createMessageFromText = (text: string): Scrap => {
+export const createMessageFromText = (text: string): Message => {
   return {
     message: text.trim(),
     date: new Date(),
