@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, StyleSheet } from "react-native";
+import { KeyboardAvoidingView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MessageInput } from "@/components/message-input";
 import { MessageView } from "@/components/message-view";
@@ -6,12 +6,11 @@ import { isIOS } from "@/utils/device";
 
 export default function HomeScreen() {
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1 bg-[#f8fafc]">
       <KeyboardAvoidingView
-        style={styles.wrapper}
+        className="flex-1 bg-blue-50"
         behavior={isIOS() ? "padding" : "height"}
         keyboardVerticalOffset={24}
-        className="bg-blue-50"
       >
         <MessageView />
         <MessageInput />
@@ -19,13 +18,3 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f8fafc",
-  },
-  wrapper: {
-    flex: 1,
-  },
-});
