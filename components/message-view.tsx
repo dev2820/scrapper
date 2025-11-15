@@ -11,10 +11,10 @@ import { MessageMenu } from "@/components/message-menu";
 import { useDeleteMessage } from "@/hooks/message/use-delete-message";
 import { Message } from "@/types/Message";
 import {
-  LinkPreviewCard,
   type LinkPreviewData,
   type LinkPreviewState,
 } from "@/components/link-preview-card";
+import { OpenGraphLoader } from "./open-graph-loader";
 
 const linkify = new LinkifyIt();
 
@@ -183,25 +183,14 @@ export function MessageView() {
                       <Text style={styles.messageText}>{message.text}</Text>
                     </Hyperlink>
                   </Pressable>
-                  {(() => {
-                    const firstUrl = getFirstLinkFromMessage(message.text);
-                    if (!firstUrl) {
-                      return null;
-                    }
-
-                    const preview = linkPreviews[message.id];
-                    if (!preview) {
-                      return null;
-                    }
-
-                    return (
-                      <LinkPreviewCard
-                        preview={preview}
-                        targetUrl={firstUrl}
-                        onOpen={handleClickLink}
-                      />
-                    );
-                  })()}
+                  {getFirstLinkFromMessage(message.text) && (
+                    <OpenGraphLoader
+                      url={getFirstLinkFromMessage(message.text)!}
+                      fallback={null}
+                    >
+                      {(og) => <Text>{og.title}</Text>}
+                    </OpenGraphLoader>
+                  )}
                 </View>
               </View>
             );
