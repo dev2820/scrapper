@@ -158,8 +158,7 @@ export function MessageView() {
           <EmptyFallback />
         ) : (
           messages.map((message) => {
-            const messageDate = toDate(message.date);
-            const dateKey = getDateKey(messageDate);
+            const dateKey = getDateKey(message.date);
             const showDivider = dateKey !== previousDateKey;
             if (showDivider) {
               previousDateKey = dateKey;
@@ -168,7 +167,7 @@ export function MessageView() {
             return (
               <View key={message.id}>
                 {showDivider ? (
-                  <DateDivider label={formatDateLabel(messageDate)} />
+                  <DateDivider label={formatDateLabel(message.date)} />
                 ) : null}
                 <View style={styles.messageGroup}>
                   <View style={styles.messageBubble}>
@@ -289,9 +288,6 @@ const getDisplayUrl = (rawUrl: string) => {
     return rawUrl;
   }
 };
-
-const toDate = (value: Date | string) =>
-  value instanceof Date ? value : new Date(value);
 
 const getDateKey = (value: Date) => value.toISOString().slice(0, 10);
 
