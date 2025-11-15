@@ -59,6 +59,8 @@ export function MessageView() {
   );
 
   const getFirstLinkFromMessage = useCallback((text: string) => {
+    if (text === undefined) return null;
+
     const matches = linkify.match(text);
     if (!matches || matches.length === 0) {
       return null;
@@ -150,10 +152,7 @@ export function MessageView() {
     <View style={styles.messagesContainer}>
       <ScrollView
         ref={scrollViewRef}
-        contentContainerStyle={[
-          styles.messagesContent,
-          messages.length === 0 && styles.messagesEmpty,
-        ]}
+        contentContainerStyle={[styles.messagesContent]}
       >
         {messages.length === 0 ? (
           <EmptyFallback />
