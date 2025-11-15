@@ -1,4 +1,4 @@
-import { View, Pressable, StyleSheet } from "react-native";
+import { View, Pressable } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Hyperlink } from "@/components/ui/hyperlink";
 import { OpenGraphLoader } from "./open-graph-loader";
@@ -38,13 +38,13 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
   return (
     <View key={message.id}>
-      <View style={styles.messageGroup}>
+      <View className="flex-col items-end self-end mt-3 max-w-[80%]">
         <Pressable
           onLongPress={handleLongPressMessage}
-          style={styles.messageBubble}
+          className="bg-[#dddddd] rounded-2xl py-2.5 px-3.5 max-w-[80%]"
         >
           <Hyperlink onPress={handleClickLink}>
-            <Text style={styles.messageText}>{message.text}</Text>
+            <Text className="text-[#111111] text-base">{message.text}</Text>
           </Hyperlink>
         </Pressable>
         {link && (
@@ -77,24 +77,3 @@ const getFirstLinkFromMessage = (text: string) => {
   }
   return matches[0].url;
 };
-
-const styles = StyleSheet.create({
-  messageGroup: {
-    flexDirection: "column",
-    alignItems: "flex-end",
-    alignSelf: "flex-end",
-    marginTop: 12,
-    maxWidth: "80%",
-  },
-  messageBubble: {
-    backgroundColor: "#dddddd",
-    borderRadius: 16,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    maxWidth: "80%",
-  },
-  messageText: {
-    color: "#111111",
-    fontSize: 16,
-  },
-});
