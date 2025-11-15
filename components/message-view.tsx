@@ -126,6 +126,14 @@ export function MessageView() {
   );
 }
 
+function EmptyFallback() {
+  return (
+    <Text style={styles.placeholderText}>
+      Start chatting by typing a message below.
+    </Text>
+  );
+}
+
 const formatDateLabel = (value: Date) => {
   const today = new Date();
 
@@ -135,14 +143,6 @@ const formatDateLabel = (value: Date) => {
     year: isSameYear(value, today) ? undefined : "numeric",
   }).format(value);
 };
-
-function EmptyFallback() {
-  return (
-    <Text style={styles.placeholderText}>
-      Start chatting by typing a message below.
-    </Text>
-  );
-}
 
 const styles = StyleSheet.create({
   messagesContainer: {
