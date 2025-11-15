@@ -17,7 +17,7 @@ export function MessageInput() {
   const handleSend = useCallback(() => {
     createMessage(draft);
     setDraft("");
-  }, [draft]);
+  }, [createMessage, draft]);
 
   return (
     <NativeOnlyAnimatedView
