@@ -14,11 +14,11 @@ import "../global.css";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useSharedTargetIOS } from "@/hooks/use-shared-target-ios";
 import type { SharedMessage } from "@/types/SharedMessage";
-import { useCreateMessage } from "@/hooks/message/use-create-message";
+import { useAddMessage } from "@/hooks/message/use-add-message";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const createMessage = useCreateMessage();
+  const addMessage = useAddMessage();
 
   const handleSharedContent = (share: SharedMessage) => {
     try {
@@ -28,7 +28,7 @@ export default function RootLayout() {
       if (!isString(sharedText)) return;
       if (isEmpty(sharedText)) return;
 
-      createMessage(sharedText);
+      addMessage(sharedText);
     } catch (error) {
       console.error("❌ Failed to handle shared content:", error);
     }

@@ -8,10 +8,10 @@ import {
  * Hook for creating/adding new messages.
  *
  * @example
- * const createMessage = useCreateMessage();
- * createMessage("Hello world");
+ * const addMessage = useAddMessage();
+ * addMessage("Hello world");
  */
-export function useCreateMessage() {
+export function useAddMessage() {
   const addMessage = useMessagesStore((state) => state.addMessage);
 
   return useCallback(

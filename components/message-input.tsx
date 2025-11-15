@@ -5,19 +5,19 @@ import { NativeOnlyAnimatedView } from "./ui/native-only-animated-view";
 import { useCallback, useMemo, useState } from "react";
 import { Textarea } from "./ui/textarea";
 import { cn } from "@/lib/utils";
-import { useCreateMessage } from "@/hooks/message/use-create-message";
+import { useAddMessage } from "@/hooks/message/use-add-message";
 
 export function MessageInput() {
-  const createMessage = useCreateMessage();
+  const addMessage = useAddMessage();
   const [draft, setDraft] = useState("");
 
   const canSend = draft.trim().length > 0;
   const lines = useMemo(() => Math.min(draft.split("\n").length, 6), [draft]);
 
   const handleSend = useCallback(() => {
-    createMessage(draft);
+    addMessage(draft);
     setDraft("");
-  }, [createMessage, draft]);
+  }, [addMessage, draft]);
 
   return (
     <NativeOnlyAnimatedView
