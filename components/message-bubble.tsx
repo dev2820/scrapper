@@ -6,7 +6,7 @@ import { LinkPreviewCard } from "./link-preview-card";
 import type { Message } from "@/types/Message";
 import LinkifyIt from "linkify-it";
 import { useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { MessageMenu } from "./message-menu";
 import { useDeleteMessage } from "@/hooks/message/use-delete-message";
 
@@ -21,7 +21,13 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   const deleteMessage = useDeleteMessage();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const link = getFirstLinkFromMessage(message.text);
+  const link = useMemo(() => {
+    const matches = linkify.match(message.text);
+    if (!matches || matches.length === 0) {
+      return null;
+    }
+    return matches[0].url;
+  }, [message.text]);
 
   const handleClickLink = useCallback(
     (url: string) => {
@@ -67,13 +73,3 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     </View>
   );
 }
-
-const getFirstLinkFromMessage = (text: string) => {
-  if (text === undefined) return null;
-
-  const matches = linkify.match(text);
-  if (!matches || matches.length === 0) {
-    return null;
-  }
-  return matches[0].url;
-};
