@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ScrollView, StyleSheet, View, Pressable } from "react-native";
+import { useEffect, useRef, Fragment } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { isSameDay } from "date-fns";
 import { Text } from "@/components/ui/text";
 import { useMessages } from "@/hooks/message/use-messages";
 import { DateDivider } from "@/components/date-divider";
-import { MessageMenu } from "@/components/message-menu";
-import { useDeleteMessage } from "@/hooks/message/use-delete-message";
-import { Message } from "@/types/Message";
 import { MessageBubble } from "@/components/message-bubble";
 
 export function MessageView() {
@@ -14,11 +11,6 @@ export function MessageView() {
 
   const scrollViewRef = useRef<ScrollView>(null);
   const previousMessagesLengthRef = useRef(messages.length);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
-    null,
-  );
-  const deleteMessage = useDeleteMessage();
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
@@ -29,15 +21,6 @@ export function MessageView() {
     }
     previousMessagesLengthRef.current = messages.length;
   }, [messages.length]);
-
-  const handleLongPressMessage = useCallback((messageId: string) => {
-    setSelectedMessageId(messageId);
-    setMenuOpen(true);
-  }, []);
-
-  const handleDeleteMessage = (id: Message["id"]) => {
-    deleteMessage(id);
-  };
 
   return (
     <View style={styles.messagesContainer}>
@@ -56,30 +39,14 @@ export function MessageView() {
               : true;
 
             return (
-              <>
+              <Fragment key={i}>
                 {showDivider && <DateDivider date={message.date} />}
-                <MessageBubble
-                  message={message}
-                  onLongPress={handleLongPressMessage}
-                />
-              </>
+                <MessageBubble message={message} />
+              </Fragment>
             );
           })
         )}
       </ScrollView>
-
-      <MessageMenu open={menuOpen} onOpenChange={setMenuOpen}>
-        <Pressable
-          onPress={() => {
-            if (selectedMessageId) {
-              handleDeleteMessage(selectedMessageId);
-            }
-            setMenuOpen(false);
-          }}
-        >
-          <Text>Delete</Text>
-        </Pressable>
-      </MessageMenu>
     </View>
   );
 }

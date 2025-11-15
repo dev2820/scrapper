@@ -6,17 +6,21 @@ import { LinkPreviewCard } from "./link-preview-card";
 import type { Message } from "@/types/Message";
 import LinkifyIt from "linkify-it";
 import { useRouter } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
+import { MessageMenu } from "./message-menu";
+import { useDeleteMessage } from "@/hooks/message/use-delete-message";
 
 const linkify = new LinkifyIt();
 
 type MessageBubbleProps = {
   message: Message;
-  onLongPress: (messageId: string) => void;
 };
 
-export function MessageBubble({ message, onLongPress }: MessageBubbleProps) {
+export function MessageBubble({ message }: MessageBubbleProps) {
   const router = useRouter();
+  const deleteMessage = useDeleteMessage();
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const link = getFirstLinkFromMessage(message.text);
 
   const handleClickLink = useCallback(
@@ -28,12 +32,19 @@ export function MessageBubble({ message, onLongPress }: MessageBubbleProps) {
     },
     [router],
   );
+  const handleLongPressMessage = useCallback(() => {
+    setMenuOpen(true);
+  }, []);
+
+  const handleDeleteMessage = (id: Message["id"]) => {
+    deleteMessage(id);
+  };
 
   return (
     <View key={message.id}>
       <View style={styles.messageGroup}>
         <Pressable
-          onLongPress={() => onLongPress(message.id)}
+          onLongPress={handleLongPressMessage}
           style={styles.messageBubble}
         >
           <Hyperlink onPress={handleClickLink}>
@@ -46,9 +57,21 @@ export function MessageBubble({ message, onLongPress }: MessageBubbleProps) {
           </OpenGraphLoader>
         )}
       </View>
+
+      <MessageMenu open={menuOpen} onOpenChange={setMenuOpen}>
+        <Pressable
+          onPress={() => {
+            handleDeleteMessage(message.id);
+            setMenuOpen(false);
+          }}
+        >
+          <Text>Delete</Text>
+        </Pressable>
+      </MessageMenu>
     </View>
   );
 }
+
 const getFirstLinkFromMessage = (text: string) => {
   if (text === undefined) return null;
 
