@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View, Pressable } from "react-native";
-import { isSameYear, isSameDay } from "date-fns";
+import { isSameDay } from "date-fns";
 import { useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
 import { Hyperlink } from "@/components/ui/hyperlink";
@@ -78,31 +78,34 @@ export function MessageView() {
           messages.map((message, i) => {
             const prevMessage = messages[i - 1];
 
-            const showDivider =
-              prevMessage && !isSameDay(message.date, prevMessage.date);
+            const showDivider = prevMessage
+              ? !isSameDay(message.date, prevMessage.date)
+              : true;
 
             return (
-              <View key={message.id}>
+              <>
                 {showDivider && <DateDivider date={message.date} />}
-                <View style={styles.messageGroup}>
-                  <Pressable
-                    onLongPress={() => handleLongPressMessage(message.id)}
-                    style={styles.messageBubble}
-                  >
-                    <Hyperlink onPress={handleClickLink}>
-                      <Text style={styles.messageText}>{message.text}</Text>
-                    </Hyperlink>
-                  </Pressable>
-                  {getFirstLinkFromMessage(message.text) && (
-                    <OpenGraphLoader
-                      url={getFirstLinkFromMessage(message.text)!}
-                      fallback={null}
+                <View key={message.id}>
+                  <View style={styles.messageGroup}>
+                    <Pressable
+                      onLongPress={() => handleLongPressMessage(message.id)}
+                      style={styles.messageBubble}
                     >
-                      {(og) => <LinkPreviewCard {...og} />}
-                    </OpenGraphLoader>
-                  )}
+                      <Hyperlink onPress={handleClickLink}>
+                        <Text style={styles.messageText}>{message.text}</Text>
+                      </Hyperlink>
+                    </Pressable>
+                    {getFirstLinkFromMessage(message.text) && (
+                      <OpenGraphLoader
+                        url={getFirstLinkFromMessage(message.text)!}
+                        fallback={null}
+                      >
+                        {(og) => <LinkPreviewCard {...og} />}
+                      </OpenGraphLoader>
+                    )}
+                  </View>
                 </View>
-              </View>
+              </>
             );
           })
         )}
