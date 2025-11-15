@@ -7,6 +7,7 @@ import { Hyperlink } from "@/components/ui/hyperlink";
 import { Image } from "expo-image";
 import { useMessages } from "@/hooks/message/use-messages";
 import LinkifyIt from "linkify-it";
+import { DateDivider } from "./DateDivider";
 
 const linkify = new LinkifyIt();
 
@@ -203,16 +204,6 @@ export function MessageView() {
           })
         )}
       </ScrollView>
-    </View>
-  );
-}
-
-function DateDivider({ label }: { label: string }) {
-  return (
-    <View style={styles.dateDividerContainer}>
-      <View style={styles.dateDividerLine} />
-      <Text style={styles.dateDividerText}>{label}</Text>
-      <View style={styles.dateDividerLine} />
     </View>
   );
 }
@@ -494,23 +485,5 @@ const styles = StyleSheet.create({
   previewStatusText: {
     fontSize: 13,
     color: "#475569",
-  },
-  dateDividerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 16,
-    marginBottom: 4,
-  },
-  dateDividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#e2e8f0",
-  },
-  dateDividerText: {
-    marginHorizontal: 12,
-    fontSize: 13,
-    color: "#475569",
-    textTransform: "uppercase",
-    letterSpacing: 0.8,
   },
 });
