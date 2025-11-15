@@ -82,6 +82,7 @@ export function MessageView() {
               ? !isSameDay(message.date, prevMessage.date)
               : true;
 
+            const link = getFirstLinkFromMessage(message.text);
             return (
               <>
                 {showDivider && <DateDivider date={message.date} />}
@@ -95,11 +96,8 @@ export function MessageView() {
                         <Text style={styles.messageText}>{message.text}</Text>
                       </Hyperlink>
                     </Pressable>
-                    {getFirstLinkFromMessage(message.text) && (
-                      <OpenGraphLoader
-                        url={getFirstLinkFromMessage(message.text)!}
-                        fallback={null}
-                      >
+                    {link && (
+                      <OpenGraphLoader url={link} fallback={null}>
                         {(og) => <LinkPreviewCard {...og} />}
                       </OpenGraphLoader>
                     )}
