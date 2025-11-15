@@ -1,5 +1,5 @@
 export type Message = {
-  message: string;
+  text: string;
   date: Date;
   id: string;
 };

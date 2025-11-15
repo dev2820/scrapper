@@ -84,7 +84,7 @@ export const useMessagesStore = create<MessagesStore>()(
  */
 export const createMessageFromText = (text: string): Message => {
   return {
-    message: text.trim(),
+    text: text.trim(),
     date: new Date(),
     id: uuid(),
   };

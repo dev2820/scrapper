@@ -69,7 +69,7 @@ export function MessageView() {
     const pendingFetches: { id: string; url: string }[] = [];
 
     messages.forEach((message) => {
-      const firstUrl = getFirstLinkFromMessage(message.message);
+      const firstUrl = getFirstLinkFromMessage(message.text);
       if (!firstUrl) {
         return;
       }
@@ -175,11 +175,11 @@ export function MessageView() {
                 <View style={styles.messageGroup}>
                   <View style={styles.messageBubble}>
                     <Hyperlink onPress={handleClickLink}>
-                      <Text style={styles.messageText}>{message.message}</Text>
+                      <Text style={styles.messageText}>{message.text}</Text>
                     </Hyperlink>
                   </View>
                   {(() => {
-                    const firstUrl = getFirstLinkFromMessage(message.message);
+                    const firstUrl = getFirstLinkFromMessage(message.text);
                     if (!firstUrl) {
                       return null;
                     }
