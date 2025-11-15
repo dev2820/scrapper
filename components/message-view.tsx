@@ -58,6 +58,11 @@ export function MessageView() {
     [router],
   );
 
+  const handleLongPressMessage = useCallback((messageId: string, text: string) => {
+    // TODO: Implement message actions (copy, delete, etc.)
+    console.log("Long pressed message:", messageId, text);
+  }, []);
+
   const getFirstLinkFromMessage = useCallback((text: string) => {
     if (text === undefined) return null;
 
@@ -167,11 +172,14 @@ export function MessageView() {
                   <DateDivider label={formatDateLabel(message.date)} />
                 )}
                 <View style={styles.messageGroup}>
-                  <View style={styles.messageBubble}>
+                  <Pressable
+                    onLongPress={() => handleLongPressMessage(message.id, message.text)}
+                    style={styles.messageBubble}
+                  >
                     <Hyperlink onPress={handleClickLink}>
                       <Text style={styles.messageText}>{message.text}</Text>
                     </Hyperlink>
-                  </View>
+                  </Pressable>
                   {(() => {
                     const firstUrl = getFirstLinkFromMessage(message.text);
                     if (!firstUrl) {
