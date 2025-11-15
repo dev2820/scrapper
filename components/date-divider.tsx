@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import { Text } from "@/components/ui/text";
 import { useMemo } from "react";
 import { isSameYear } from "date-fns";
@@ -17,31 +17,12 @@ export function DateDivider(props: { date: Date }) {
   }, [date]);
 
   return (
-    <View style={styles.dateDividerContainer}>
-      <View style={styles.dateDividerLine} />
-      <Text style={styles.dateDividerText}>{dateLabel}</Text>
-      <View style={styles.dateDividerLine} />
+    <View className="flex-row items-center mt-4 mb-1">
+      <View className="flex-1 h-px bg-slate-200" />
+      <Text className="mx-3 text-[13px] text-slate-600 uppercase tracking-wider">
+        {dateLabel}
+      </Text>
+      <View className="flex-1 h-px bg-slate-200" />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  dateDividerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 16,
-    marginBottom: 4,
-  },
-  dateDividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#e2e8f0",
-  },
-  dateDividerText: {
-    marginHorizontal: 12,
-    fontSize: 13,
-    color: "#475569",
-    textTransform: "uppercase",
-    letterSpacing: 0.8,
-  },
-});
