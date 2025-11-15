@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View, Pressable } from "react-native";
-import { isSameYear } from "date-fns";
+import { isSameYear, isSameDay } from "date-fns";
 import { useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
 import { Hyperlink } from "@/components/ui/hyperlink";
@@ -146,8 +146,6 @@ export function MessageView() {
     };
   }, [messages, getFirstLinkFromMessage]);
 
-  let previousDateKey: string | null = null;
-
   return (
     <View style={styles.messagesContainer}>
       <ScrollView
@@ -157,18 +155,17 @@ export function MessageView() {
         {messages.length === 0 ? (
           <EmptyFallback />
         ) : (
-          messages.map((message) => {
-            const dateKey = getDateKey(message.date);
-            const showDivider = dateKey !== previousDateKey;
-            if (showDivider) {
-              previousDateKey = dateKey;
-            }
+          messages.map((message, i) => {
+            const prevMessage = messages[i - 1];
+
+            const showDivider =
+              prevMessage && !isSameDay(message.date, prevMessage.date);
 
             return (
               <View key={message.id}>
-                {showDivider ? (
+                {showDivider && (
                   <DateDivider label={formatDateLabel(message.date)} />
-                ) : null}
+                )}
                 <View style={styles.messageGroup}>
                   <View style={styles.messageBubble}>
                     <Hyperlink onPress={handleClickLink}>
@@ -288,8 +285,6 @@ const getDisplayUrl = (rawUrl: string) => {
     return rawUrl;
   }
 };
-
-const getDateKey = (value: Date) => value.toISOString().slice(0, 10);
 
 const formatDateLabel = (value: Date) => {
   const today = new Date();
