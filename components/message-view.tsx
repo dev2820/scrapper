@@ -7,7 +7,7 @@ import { Hyperlink } from "@/components/ui/hyperlink";
 import { Image } from "expo-image";
 import { useMessages } from "@/hooks/message/use-messages";
 import LinkifyIt from "linkify-it";
-import { DateDivider } from "./DateDivider";
+import { DateDivider } from "@/components/date-divider";
 
 const linkify = new LinkifyIt();
 
