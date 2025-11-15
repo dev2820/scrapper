@@ -1,22 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View, Pressable } from "react-native";
 import { isSameDay } from "date-fns";
-import { useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
-import { Hyperlink } from "@/components/ui/hyperlink";
 import { useMessages } from "@/hooks/message/use-messages";
-import LinkifyIt from "linkify-it";
 import { DateDivider } from "@/components/date-divider";
 import { MessageMenu } from "@/components/message-menu";
 import { useDeleteMessage } from "@/hooks/message/use-delete-message";
 import { Message } from "@/types/Message";
-import { OpenGraphLoader } from "./open-graph-loader";
-import { LinkPreviewCard } from "./link-preview-card";
-
-const linkify = new LinkifyIt();
+import { MessageBubble } from "@/components/message-bubble";
 
 export function MessageView() {
-  const router = useRouter();
   const messages = useMessages();
 
   const scrollViewRef = useRef<ScrollView>(null);
@@ -37,16 +30,6 @@ export function MessageView() {
     previousMessagesLengthRef.current = messages.length;
   }, [messages.length]);
 
-  const handleClickLink = useCallback(
-    (url: string) => {
-      router.push({
-        pathname: "/webview",
-        params: { url },
-      });
-    },
-    [router],
-  );
-
   const handleLongPressMessage = useCallback((messageId: string) => {
     setSelectedMessageId(messageId);
     setMenuOpen(true);
@@ -55,16 +38,6 @@ export function MessageView() {
   const handleDeleteMessage = (id: Message["id"]) => {
     deleteMessage(id);
   };
-
-  const getFirstLinkFromMessage = useCallback((text: string) => {
-    if (text === undefined) return null;
-
-    const matches = linkify.match(text);
-    if (!matches || matches.length === 0) {
-      return null;
-    }
-    return matches[0].url;
-  }, []);
 
   return (
     <View style={styles.messagesContainer}>
@@ -82,27 +55,13 @@ export function MessageView() {
               ? !isSameDay(message.date, prevMessage.date)
               : true;
 
-            const link = getFirstLinkFromMessage(message.text);
             return (
               <>
                 {showDivider && <DateDivider date={message.date} />}
-                <View key={message.id}>
-                  <View style={styles.messageGroup}>
-                    <Pressable
-                      onLongPress={() => handleLongPressMessage(message.id)}
-                      style={styles.messageBubble}
-                    >
-                      <Hyperlink onPress={handleClickLink}>
-                        <Text style={styles.messageText}>{message.text}</Text>
-                      </Hyperlink>
-                    </Pressable>
-                    {link && (
-                      <OpenGraphLoader url={link} fallback={null}>
-                        {(og) => <LinkPreviewCard {...og} />}
-                      </OpenGraphLoader>
-                    )}
-                  </View>
-                </View>
+                <MessageBubble
+                  message={message}
+                  onLongPress={handleLongPressMessage}
+                />
               </>
             );
           })
@@ -150,23 +109,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#94a3b8",
     fontSize: 16,
-  },
-  messageBubble: {
-    backgroundColor: "#dddddd",
-    borderRadius: 16,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    maxWidth: "80%",
-  },
-  messageText: {
-    color: "#111111",
-    fontSize: 16,
-  },
-  messageGroup: {
-    flexDirection: "column",
-    alignItems: "flex-end",
-    alignSelf: "flex-end",
-    marginTop: 12,
-    maxWidth: "80%",
   },
 });
