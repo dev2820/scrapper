@@ -36,10 +36,6 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     setMenuOpen(true);
   }, []);
 
-  const handleDeleteMessage = (id: Message["id"]) => {
-    deleteMessage(id);
-  };
-
   return (
     <View key={message.id}>
       <View style={styles.messageGroup}>
@@ -61,7 +57,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       <MessageMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <Pressable
           onPress={() => {
-            handleDeleteMessage(message.id);
+            deleteMessage(message.id);
             setMenuOpen(false);
           }}
         >
