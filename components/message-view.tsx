@@ -83,9 +83,7 @@ export function MessageView() {
 
             return (
               <View key={message.id}>
-                {showDivider && (
-                  <DateDivider label={formatDateLabel(message.date)} />
-                )}
+                {showDivider && <DateDivider date={message.date} />}
                 <View style={styles.messageGroup}>
                   <Pressable
                     onLongPress={() => handleLongPressMessage(message.id)}
@@ -133,16 +131,6 @@ function EmptyFallback() {
     </Text>
   );
 }
-
-const formatDateLabel = (value: Date) => {
-  const today = new Date();
-
-  return new Intl.DateTimeFormat(undefined, {
-    month: "long",
-    day: "numeric",
-    year: isSameYear(value, today) ? undefined : "numeric",
-  }).format(value);
-};
 
 const styles = StyleSheet.create({
   messagesContainer: {

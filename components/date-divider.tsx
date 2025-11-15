@@ -1,11 +1,25 @@
 import { View, StyleSheet } from "react-native";
 import { Text } from "@/components/ui/text";
+import { useMemo } from "react";
+import { isSameYear } from "date-fns";
 
-export function DateDivider({ label }: { label: string }) {
+export function DateDivider(props: { date: Date }) {
+  const { date } = props;
+
+  const dateLabel = useMemo(() => {
+    const today = new Date();
+
+    return new Intl.DateTimeFormat(undefined, {
+      month: "long",
+      day: "numeric",
+      year: isSameYear(date, today) ? undefined : "numeric",
+    }).format(date);
+  }, [date]);
+
   return (
     <View style={styles.dateDividerContainer}>
       <View style={styles.dateDividerLine} />
-      <Text style={styles.dateDividerText}>{label}</Text>
+      <Text style={styles.dateDividerText}>{dateLabel}</Text>
       <View style={styles.dateDividerLine} />
     </View>
   );
