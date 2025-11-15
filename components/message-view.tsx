@@ -156,9 +156,7 @@ export function MessageView() {
         ]}
       >
         {messages.length === 0 ? (
-          <Text style={styles.placeholderText}>
-            Start chatting by typing a message below.
-          </Text>
+          <EmptyFallback />
         ) : (
           messages.map((message) => {
             const messageDate = toDate(message.date);
@@ -395,6 +393,14 @@ const resolveToAbsoluteUrl = (value: string | undefined, baseUrl: string) => {
     return undefined;
   }
 };
+
+function EmptyFallback() {
+  return (
+    <Text style={styles.placeholderText}>
+      Start chatting by typing a message below.
+    </Text>
+  );
+}
 
 const styles = StyleSheet.create({
   messagesContainer: {
