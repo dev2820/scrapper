@@ -6,9 +6,9 @@ import { isIOS } from "@/utils/device";
 
 export default function HomeScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-[#f8fafc]">
+    <SafeAreaView className="flex-1 bg-background">
       <KeyboardAvoidingView
-        className="flex-1 bg-blue-50"
+        className="flex-1"
         behavior={isIOS() ? "padding" : "height"}
         keyboardVerticalOffset={24}
       >
