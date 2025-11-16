@@ -7,6 +7,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { PortalHost } from "@rn-primitives/portal";
 import { isEmpty, isString } from "es-toolkit/compat";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 
 import "react-native-reanimated";
 import "../global.css";
@@ -42,22 +43,24 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <QueryClientProvider client={queryClient}>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="share" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="webview"
-            options={{
-              headerShown: false,
-              presentation: "card",
-              animation: "slide_from_right",
-            }}
-          />
-        </Stack>
-        <StatusBar style="auto" />
-        {isAOS() && <SharedTargetAndroid onShared={handleSharedContent} />}
-        {isIOS() && <SharedTargetIOS onShared={handleSharedContent} />}
-        <PortalHost />
+        <KeyboardProvider>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="share" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="webview"
+              options={{
+                headerShown: false,
+                presentation: "card",
+                animation: "slide_from_right",
+              }}
+            />
+          </Stack>
+          <StatusBar style="auto" />
+          {isAOS() && <SharedTargetAndroid onShared={handleSharedContent} />}
+          {isIOS() && <SharedTargetIOS onShared={handleSharedContent} />}
+          <PortalHost />
+        </KeyboardProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );
