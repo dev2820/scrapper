@@ -93,6 +93,7 @@ const withShareTarget = (config) => {
       const shareTargetModuleContent = `package ${packageName}
 
 import android.content.Intent
+import android.util.Log
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -106,6 +107,21 @@ class ShareTargetModule(reactContext: ReactApplicationContext) : ReactContextBas
     private var initialShareData: String? = null
     private var hasConsumedInitialShare = false
 
+    init {
+        // Register listener for new shares when app is running
+        MainActivity.shareListener = { intent ->
+            Log.d("ShareTargetModule", "shareListener - New share received")
+            handleIntent(intent)
+        }
+
+        // Check for static shared intent from MainActivity
+        MainActivity.sharedIntent?.let { intent ->
+            Log.d("ShareTargetModule", "init - Found sharedIntent in MainActivity")
+            handleIntent(intent)
+            MainActivity.sharedIntent = null
+        }
+    }
+
     override fun getName(): String {
         return "ShareTargetModule"
     }
@@ -113,6 +129,14 @@ class ShareTargetModule(reactContext: ReactApplicationContext) : ReactContextBas
     @ReactMethod
     fun getInitialShare(promise: Promise) {
         try {
+            // Check for new shared intent from MainActivity
+            MainActivity.sharedIntent?.let { intent ->
+                Log.d("ShareTargetModule", "getInitialShare - Found new sharedIntent")
+                handleIntent(intent)
+                MainActivity.sharedIntent = null
+            }
+
+            Log.d("ShareTargetModule", "getInitialShare - hasConsumed: \$hasConsumedInitialShare, data: \$initialShareData")
             if (hasConsumedInitialShare) {
                 promise.resolve(null)
                 return
@@ -143,15 +167,20 @@ class ShareTargetModule(reactContext: ReactApplicationContext) : ReactContextBas
     }
 
     fun handleIntent(intent: Intent?) {
+        Log.d("ShareTargetModule", "handleIntent - intent: \$intent")
         if (intent?.action == Intent.ACTION_SEND) {
             if (intent.type == "text/plain") {
                 val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
+                Log.d("ShareTargetModule", "handleIntent - sharedText: \$sharedText")
                 if (sharedText != null) {
                     initialShareData = sharedText
 
                     // If React Native is already initialized, send event
                     if (reactApplicationContext.hasActiveReactInstance()) {
+                        Log.d("ShareTargetModule", "handleIntent - Sending event")
                         sendShareEvent(sharedText)
+                    } else {
+                        Log.d("ShareTargetModule", "handleIntent - Storing for later")
                     }
                 }
             }
@@ -259,6 +288,13 @@ class ShareTargetPackage : ReactPackage {
             );
           }
 
+          if (!contents.includes("import android.util.Log")) {
+            contents = contents.replace(
+              /(import android\.content\.Intent)/,
+              "$1\nimport android.util.Log",
+            );
+          }
+
           if (
             !contents.includes("import com.facebook.react.bridge.ReactContext")
           ) {
@@ -268,12 +304,21 @@ class ShareTargetPackage : ReactPackage {
             );
           }
 
-          // Add pendingIntent field after class declaration
+          // Add companion object and pendingIntent field after class declaration
           const classDeclaration = /class MainActivity : ReactActivity\(\) \{/;
           if (classDeclaration.test(contents)) {
             contents = contents.replace(
               classDeclaration,
-              "class MainActivity : ReactActivity() {\n  private var pendingIntent: Intent? = null\n",
+              `class MainActivity : ReactActivity() {
+  companion object {
+    @Volatile
+    var sharedIntent: Intent? = null
+    @Volatile
+    var shareListener: ((Intent) -> Unit)? = null
+  }
+
+  private var pendingIntent: Intent? = null
+`,
             );
           }
 
@@ -284,16 +329,23 @@ class ShareTargetPackage : ReactPackage {
               onCreateEnd,
               `super.onCreate(null)
 
-    // Store share intent to handle later when React Native is ready
+    // DEBUG: Log intent details
+    Log.d("ShareTarget", "onCreate - Intent action: \${intent?.action}")
+    Log.d("ShareTarget", "onCreate - Intent type: \${intent?.type}")
     if (intent?.action == Intent.ACTION_SEND) {
+      val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
+      Log.d("ShareTarget", "onCreate - SEND intent received! Text: \$sharedText")
+      sharedIntent = intent
       pendingIntent = intent
     }
   }
 
   override fun onResume() {
     super.onResume()
+    Log.d("ShareTarget", "onResume - pendingIntent: \$pendingIntent")
     // Try to handle pending intent when activity resumes
     pendingIntent?.let { intent ->
+      Log.d("ShareTarget", "onResume - Handling pending intent")
       handleShareIntent(intent)
       pendingIntent = null
     }
@@ -302,6 +354,13 @@ class ShareTargetPackage : ReactPackage {
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
     setIntent(intent)
+    Log.d("ShareTarget", "onNewIntent - Intent action: \${intent.action}")
+    if (intent.action == Intent.ACTION_SEND) {
+      sharedIntent = intent
+      // Notify listener if registered
+      shareListener?.invoke(intent)
+      Log.d("ShareTarget", "onNewIntent - Notified shareListener")
+    }
     handleShareIntent(intent)
 `,
             );
@@ -314,13 +373,17 @@ class ShareTargetPackage : ReactPackage {
             contents = contents.replace(
               mainComponentRegex,
               `  private fun handleShareIntent(intent: Intent) {
+    Log.d("ShareTarget", "handleShareIntent - Intent action: \${intent.action}")
     val reactInstanceManager = reactNativeHost.reactInstanceManager
     val reactContext = reactInstanceManager.currentReactContext
 
+    Log.d("ShareTarget", "handleShareIntent - React context: \$reactContext")
     if (reactContext != null) {
       val shareTargetModule = reactContext.getNativeModule(ShareTargetModule::class.java)
+      Log.d("ShareTarget", "handleShareIntent - ShareTargetModule: \$shareTargetModule")
       shareTargetModule?.handleIntent(intent)
     } else {
+      Log.d("ShareTarget", "handleShareIntent - React context not ready, storing as pending")
       // If React context not ready, store as pending
       if (intent.action == Intent.ACTION_SEND) {
         pendingIntent = intent
