@@ -55,7 +55,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         </Pressable>
         {link && (
           <OpenGraphLoader url={link} fallback={null}>
-            {(og) => <LinkPreviewCard {...og} />}
+            {(og) => <LinkPreviewCard {...og} onPress={handleClickLink} />}
           </OpenGraphLoader>
         )}
       </View>
