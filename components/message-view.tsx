@@ -8,24 +8,31 @@ import { MessageBubble } from "@/components/message-bubble";
 
 export function MessageView() {
   const messages = useMessages();
-
+  const prevMessageCountRef = useRef<number>(messages.length);
   const scrollViewRef = useRef<ScrollView>(null);
-  const previousMessagesLengthRef = useRef(messages.length);
 
-  // Auto-scroll to bottom when new messages are added
   useEffect(() => {
-    if (messages.length > previousMessagesLengthRef.current) {
-      setTimeout(() => {
+    // 메세지 추가&삭제 시 하단이동
+    const prevCount = prevMessageCountRef.current;
+    if (prevCount !== messages.length) {
+      requestAnimationFrame(() => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 100);
+      });
     }
-    previousMessagesLengthRef.current = messages.length;
-  }, [messages.length]);
+    prevMessageCountRef.current = messages.length;
+  }, [messages]);
+
+  useEffect(() => {
+    // 처음 로딩 시 맨 아래로
+    requestAnimationFrame(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: false });
+    });
+  }, []);
 
   return (
     <ScrollView
       ref={scrollViewRef}
-      contentContainerClassName="flex-grow justify-end py-5 px-4"
+      contentContainerClassName="flex-1 justify-end py-5 px-4"
     >
       {messages.length === 0 ? (
         <EmptyFallback />
