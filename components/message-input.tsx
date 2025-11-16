@@ -60,16 +60,12 @@ export function MessageInput() {
       />
       <Button
         size="icon"
-        className="ml-2 self-end rounded-full size-12"
+        className="ml-2 self-end rounded-full size-12 bg-accent active:bg-accent/80"
         onPress={handleSend}
         accessibilityLabel="Send message"
         disabled={!canSend}
       >
-        <Icon
-          as={SendHorizonal}
-          size={20}
-          className="text-primary-foreground"
-        />
+        <Icon as={SendHorizonal} size={20} className="text-accent-foreground" />
       </Button>
     </NativeOnlyAnimatedView>
   );
