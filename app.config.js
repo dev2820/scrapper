@@ -1,6 +1,8 @@
+const profile = process.env.EAS_BUILD_PROFILE ?? "development";
+
 module.exports = {
   expo: {
-    name: "scrapper",
+    name: profile === "development" ? "scrapper (dev)" : "scrapper",
     slug: "scrapper",
     version: "1.0.1",
     orientation: "portrait",
