@@ -12,12 +12,13 @@ import "react-native-reanimated";
 import "../global.css";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { useSharedTargetIOS } from "@/hooks/use-shared-target-ios";
 import type { SharedMessage } from "@/types/SharedMessage";
 import { useAddMessage } from "@/hooks/message/use-add-message";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useSharedTargetAndroid } from "@/hooks/use-shared-target-android";
 import { useState } from "react";
+import { isAOS, isIOS } from "@/utils/device";
+import { SharedTargetAndroid } from "@/components/shared-target-android";
+import { SharedTargetIOS } from "@/components/shared-target-ios";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -37,8 +38,6 @@ export default function RootLayout() {
       console.error("❌ Failed to handle shared content:", error);
     }
   };
-  useSharedTargetIOS(handleSharedContent);
-  useSharedTargetAndroid(handleSharedContent);
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -56,6 +55,8 @@ export default function RootLayout() {
           />
         </Stack>
         <StatusBar style="auto" />
+        {isAOS() && <SharedTargetAndroid onShared={handleSharedContent} />}
+        {isIOS() && <SharedTargetIOS onShared={handleSharedContent} />}
         <PortalHost />
       </QueryClientProvider>
     </ThemeProvider>

@@ -5,7 +5,6 @@ import { MessageView } from "@/components/message-view";
 import { isAOS, isIOS } from "@/utils/device";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 
-console.log(getStatusBarHeight(true));
 export default function HomeScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">

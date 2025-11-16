@@ -4,15 +4,12 @@ import {
   ShareTargetEventEmitter,
 } from "@/modules/ShareTargetModule";
 import { SharedMessage } from "@/types/SharedMessage";
-import { isAOS } from "@/utils/device";
 
-// Android가 공유받기를 이용할 수 있게 함
-export const useSharedTargetAndroid = (
-  onShared: (message: SharedMessage) => void,
-) => {
+export function SharedTargetAndroid(props: {
+  onShared: (message: SharedMessage) => void;
+}) {
+  const { onShared } = props;
   useEffect(() => {
-    if (!isAOS()) return;
-
     // 앱이 공유로 시작될 때의 초기 데이터 가져오기
     ShareTargetModule.getInitialShare()
       .then((shareData) => {
@@ -44,4 +41,6 @@ export const useSharedTargetAndroid = (
       subscription.remove();
     };
   }, [onShared]);
-};
+
+  return null;
+}
