@@ -17,12 +17,12 @@ import type { SharedMessage } from "@/types/SharedMessage";
 import { useAddMessage } from "@/hooks/message/use-add-message";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useSharedTargetAndroid } from "@/hooks/use-shared-target-android";
-
-const queryClient = new QueryClient();
+import { useState } from "react";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const addMessage = useAddMessage();
+  const [queryClient] = useState(new QueryClient());
 
   const handleSharedContent = (share: SharedMessage) => {
     try {
