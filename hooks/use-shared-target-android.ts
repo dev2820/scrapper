@@ -16,7 +16,6 @@ export const useSharedTargetAndroid = (
     // 앱이 공유로 시작될 때의 초기 데이터 가져오기
     ShareTargetModule.getInitialShare()
       .then((shareData) => {
-        console.log("init", shareData);
         if (shareData && shareData.mimeType === "text/plain") {
           onShared({
             data: shareData.data,
@@ -32,7 +31,6 @@ export const useSharedTargetAndroid = (
     const subscription = ShareTargetEventEmitter.addListener(
       "ShareTargetEvent",
       (shareData) => {
-        console.log("subs", shareData);
         if (shareData && shareData.mimeType === "text/plain") {
           onShared({
             data: shareData.data,
