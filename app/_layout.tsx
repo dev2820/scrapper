@@ -18,7 +18,7 @@ import { useAddMessage } from "@/hooks/message/use-add-message";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { isAOS, isIOS } from "@/utils/device";
-import { SharedTargetAndroid } from "@/components/shared-target-android";
+// import { SharedTargetAndroid } from "@/components/shared-target-android";
 import { SharedTargetIOS } from "@/components/shared-target-ios";
 
 export default function RootLayout() {
@@ -57,7 +57,7 @@ export default function RootLayout() {
             />
           </Stack>
           <StatusBar style="auto" />
-          {isAOS() && <SharedTargetAndroid onShared={handleSharedContent} />}
+          {/*{isAOS() && <SharedTargetAndroid onShared={handleSharedContent} />}*/}
           {isIOS() && <SharedTargetIOS onShared={handleSharedContent} />}
           <PortalHost />
         </KeyboardProvider>

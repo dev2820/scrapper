@@ -1,5 +1,5 @@
 import { useEffect, useRef, Fragment } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 import { isSameDay } from "date-fns";
 import { Text } from "@/components/ui/text";
 import { useMessages } from "@/hooks/message/use-messages";
@@ -23,31 +23,29 @@ export function MessageView() {
   }, [messages.length]);
 
   return (
-    <View className="flex-1">
-      <ScrollView
-        ref={scrollViewRef}
-        contentContainerClassName="flex-grow justify-end py-5 px-4"
-      >
-        {messages.length === 0 ? (
-          <EmptyFallback />
-        ) : (
-          messages.map((message, i) => {
-            const prevMessage = messages[i - 1];
+    <ScrollView
+      ref={scrollViewRef}
+      contentContainerClassName="flex-grow justify-end py-5 px-4"
+    >
+      {messages.length === 0 ? (
+        <EmptyFallback />
+      ) : (
+        messages.map((message, i) => {
+          const prevMessage = messages[i - 1];
 
-            const showDivider = prevMessage
-              ? !isSameDay(message.date, prevMessage.date)
-              : true;
+          const showDivider = prevMessage
+            ? !isSameDay(message.date, prevMessage.date)
+            : true;
 
-            return (
-              <Fragment key={i}>
-                {showDivider && <DateDivider date={message.date} />}
-                <MessageBubble message={message} />
-              </Fragment>
-            );
-          })
-        )}
-      </ScrollView>
-    </View>
+          return (
+            <Fragment key={i}>
+              {showDivider && <DateDivider date={message.date} />}
+              <MessageBubble message={message} />
+            </Fragment>
+          );
+        })
+      )}
+    </ScrollView>
   );
 }
 

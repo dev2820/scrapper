@@ -11,8 +11,11 @@ import {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
+  interpolate,
 } from "react-native-reanimated";
 import { useThemeColor } from "@/hooks/use-theme-color";
+import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export function MessageInput() {
   const colorScheme = useColorScheme();
@@ -21,10 +24,14 @@ export function MessageInput() {
   const [draft, setDraft] = useState("");
   const height = useSharedValue(60);
   const canSend = draft.trim().length > 0;
+  const { height: keyboardHeight, progress } = useReanimatedKeyboardAnimation();
+  const insets = useSafeAreaInsets();
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: withTiming(height.value, { duration: 0 }),
     overflow: "hidden",
+    transform: [{ translateY: -keyboardHeight.value }],
+    paddingBottom: interpolate(progress.value, [0, 1], [insets.bottom, 0]),
   }));
   const handleSend = useCallback(() => {
     addMessage(draft);
