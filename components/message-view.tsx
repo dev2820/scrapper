@@ -32,7 +32,7 @@ export function MessageView() {
   return (
     <ScrollView
       ref={scrollViewRef}
-      contentContainerClassName="flex-1 justify-end py-5 px-4"
+      contentContainerClassName="flex-grow justify-end py-5 px-4"
     >
       {messages.length === 0 ? (
         <EmptyFallback />
