@@ -1,12 +1,15 @@
 import { useEffect } from "react";
 import * as Linking from "expo-linking";
 import { SharedMessage } from "@/types/SharedMessage";
+import { isIOS } from "@/utils/device";
 
 // iOS가 공유받기를 이용할 수 있게 함
 export const useSharedTargetIOS = (
   onShared: (message: SharedMessage) => void,
 ) => {
   useEffect(() => {
+    if (!isIOS()) return;
+
     const handleURL = ({ url }: { url: string }) => {
       const parsed = Linking.parse(url);
 

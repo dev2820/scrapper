@@ -49,6 +49,7 @@ module.exports = {
         },
       ],
       "./plugins/withShareExtension",
+      "./plugins/withShareTarget.js",
     ],
     experiments: {
       typedRoutes: true,

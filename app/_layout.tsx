@@ -16,6 +16,7 @@ import { useSharedTargetIOS } from "@/hooks/use-shared-target-ios";
 import type { SharedMessage } from "@/types/SharedMessage";
 import { useAddMessage } from "@/hooks/message/use-add-message";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useSharedTargetAndroid } from "@/hooks/use-shared-target-android";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ export default function RootLayout() {
     }
   };
   useSharedTargetIOS(handleSharedContent);
+  useSharedTargetAndroid(handleSharedContent);
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>

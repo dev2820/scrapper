@@ -22,7 +22,6 @@ function OpenGraphContent({
   const { data: og } = useOpenGraph(url);
 
   const { title, description, siteName, image } = og;
-  console.log(og);
   return <>{children({ url, title, description, siteName, image })}</>;
 }
 
