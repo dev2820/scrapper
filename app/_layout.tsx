@@ -15,6 +15,9 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useSharedTargetIOS } from "@/hooks/use-shared-target-ios";
 import type { SharedMessage } from "@/types/SharedMessage";
 import { useAddMessage } from "@/hooks/message/use-add-message";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -37,20 +40,22 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="share" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="webview"
-          options={{
-            headerShown: false,
-            presentation: "card",
-            animation: "slide_from_right",
-          }}
-        />
-      </Stack>
-      <StatusBar style="auto" />
-      <PortalHost />
+      <QueryClientProvider client={queryClient}>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="share" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="webview"
+            options={{
+              headerShown: false,
+              presentation: "card",
+              animation: "slide_from_right",
+            }}
+          />
+        </Stack>
+        <StatusBar style="auto" />
+        <PortalHost />
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }
