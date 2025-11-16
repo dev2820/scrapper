@@ -18,9 +18,7 @@ type HyperlinkProps = {
 
 const linkify = new LinkifyIt();
 
-type ElementWithChildren = React.ReactElement<
-  React.PropsWithChildren<unknown>
->;
+type ElementWithChildren = React.ReactElement<React.PropsWithChildren<unknown>>;
 
 type HandlePress = (url: string) => void;
 
@@ -239,13 +237,12 @@ function HyperlinkText({
 
 const styles = StyleSheet.create({
   link: {
-    color: "#2563eb",
+    color: "hsl(0 0% 98%)",
     textDecorationLine: "underline",
     textDecorationStyle: "solid",
-    textDecorationColor: "#2563eb",
+    textDecorationColor: "hsl(0 0% 98%)",
   },
   linkPressed: {
-    color: "#1e3a8a",
-    textDecorationColor: "#1e3a8a",
+    color: "hsl(0 0% 88%)",
   },
 });

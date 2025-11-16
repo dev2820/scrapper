@@ -47,10 +47,12 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       <View className="flex-col items-end self-end mt-3 max-w-[80%]">
         <Pressable
           onLongPress={handleLongPressMessage}
-          className="bg-[#dddddd] rounded-2xl rounded-br-none py-2.5 px-3.5 max-w-[80%]"
+          className="bg-primary rounded-2xl rounded-br-none py-2.5 px-3.5 max-w-[80%]"
         >
           <Hyperlink onPress={handleClickLink}>
-            <Text className="text-[#111111] text-base">{message.text}</Text>
+            <Text className="text-primary-foreground text-base">
+              {message.text}
+            </Text>
           </Hyperlink>
         </Pressable>
         {link && (
