@@ -116,6 +116,9 @@ function transformNode(
 ): { nodes: React.ReactNode[]; matched: boolean } {
   if (typeof node === "string") {
     const matches = linkify.match(node);
+    matches?.forEach((m) => {
+      m.url = m.url.replace(/^http:\/\//, "https://");
+    });
     if (!matches || matches.length === 0) {
       return { nodes: [node], matched: false };
     }

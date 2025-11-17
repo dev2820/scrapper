@@ -31,9 +31,13 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
   const handleClickLink = useCallback(
     (url: string) => {
+      const secureUrl = url.startsWith("http://")
+        ? url.replace("http://", "https://")
+        : url;
+
       router.push({
         pathname: "/webview",
-        params: { url },
+        params: { url: secureUrl },
       });
     },
     [router],
