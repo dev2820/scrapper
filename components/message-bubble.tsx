@@ -1,4 +1,4 @@
-import { View, Pressable } from "react-native";
+import { View, Pressable, Vibration } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Hyperlink } from "@/components/ui/hyperlink";
 import { OpenGraphLoader } from "./open-graph-loader";
@@ -69,6 +69,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       <MessageMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <Pressable
           onPress={() => {
+            Vibration.vibrate(50);
             deleteMessage(message.id);
             setMenuOpen(false);
           }}
