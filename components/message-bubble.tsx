@@ -44,6 +44,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     [router],
   );
   const handleLongPressMessage = useCallback(() => {
+    Vibration.vibrate(50);
     setMenuOpen(true);
   }, []);
 
@@ -73,7 +74,6 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       <MessageMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <Pressable
           onPress={() => {
-            Vibration.vibrate(50);
             deleteMessage(message.id);
             setMenuOpen(false);
           }}
