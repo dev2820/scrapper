@@ -9,6 +9,7 @@ import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { MessageMenu } from "./message-menu";
 import { useDeleteMessage } from "@/hooks/message/use-delete-message";
+import { cn } from "@/lib/utils";
 
 const linkify = new LinkifyIt();
 
@@ -51,7 +52,10 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       <View className="flex-col items-end self-end mt-3 max-w-[80%]">
         <Pressable
           onLongPress={handleLongPressMessage}
-          className="bg-primary rounded-2xl rounded-br-none py-2.5 px-3.5 max-w-[80%]"
+          className={cn(
+            "bg-primary rounded-2xl rounded-br-none py-2.5 px-3.5 max-w-[80%]",
+            "active:opacity-80",
+          )}
         >
           <Hyperlink onPress={handleClickLink}>
             <Text className="text-primary-foreground text-base">
