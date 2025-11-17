@@ -1,4 +1,4 @@
-import { Modal, Pressable, StyleSheet } from "react-native";
+import { Modal, Pressable } from "react-native";
 
 type MessageMenuProps = {
   open: boolean;
@@ -18,27 +18,17 @@ export function MessageMenu({
       animationType="fade"
       onRequestClose={() => onOpenChange(false)}
     >
-      <Pressable style={styles.overlay} onPress={() => onOpenChange(false)}>
-        <Pressable style={styles.menu} onPress={(e) => e.stopPropagation()}>
+      <Pressable
+        className="flex-1 bg-black/50 justify-center items-center"
+        onPress={() => onOpenChange(false)}
+      >
+        <Pressable
+          className="bg-white rounded-2xl p-5 min-w-[240px] max-w-[80%]"
+          onPress={(e) => e.stopPropagation()}
+        >
           {children}
         </Pressable>
       </Pressable>
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  menu: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 20,
-    minWidth: 240,
-    maxWidth: "80%",
-  },
-});
