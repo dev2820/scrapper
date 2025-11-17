@@ -23,7 +23,7 @@ export function MessageMenu({
         onPress={() => onOpenChange(false)}
       >
         <Pressable
-          className="bg-white rounded-2xl p-5 min-w-[240px] max-w-[80%]"
+          className="bg-card text-card-foreground rounded-2xl p-5 min-w-[240px] max-w-[80%]"
           onPress={(e) => e.stopPropagation()}
         >
           {children}

@@ -37,6 +37,7 @@ export function LinkPreviewCard({
         styles.previewCard,
         hasImage ? styles.previewCardWithImage : undefined,
       ]}
+      className="bg-card text-card-foreground"
       onPress={() => onPress?.(url)}
       accessibilityRole="link"
     >
@@ -47,17 +48,29 @@ export function LinkPreviewCard({
           contentFit="cover"
         />
       ) : null}
-      <View style={styles.previewTextContent}>
+      <View className="text-card-foreground flex-1">
         {displaySiteName ? (
-          <Text style={styles.previewSite} numberOfLines={1}>
+          <Text
+            style={styles.previewSite}
+            className="text-card-foreground/80"
+            numberOfLines={1}
+          >
             {displaySiteName}
           </Text>
         ) : null}
-        <Text style={styles.previewTitle} numberOfLines={2}>
+        <Text
+          style={styles.previewTitle}
+          className="text-card-foreground"
+          numberOfLines={2}
+        >
           {title ?? displayUrl}
         </Text>
         {description ? (
-          <Text style={styles.previewDescription} numberOfLines={3}>
+          <Text
+            style={styles.previewDescription}
+            className="text-card-foreground/80"
+            numberOfLines={3}
+          >
             {description}
           </Text>
         ) : null}
@@ -92,9 +105,6 @@ const getDisplayUrl = (rawUrl: string) => {
 const styles = StyleSheet.create({
   previewCard: {
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    backgroundColor: "#ffffff",
     padding: 12,
     marginTop: 8,
     flexDirection: "row",
@@ -110,11 +120,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginRight: 12,
   },
-  previewTextContent: {
-    flex: 1,
-  },
   previewSite: {
-    color: "#475569",
     fontSize: 12,
     marginBottom: 4,
     textTransform: "uppercase",
@@ -124,11 +130,9 @@ const styles = StyleSheet.create({
   previewTitle: {
     fontSize: 15,
     fontWeight: "600",
-    color: "#0f172a",
   },
   previewDescription: {
     fontSize: 13,
-    color: "#475569",
     marginTop: 4,
   },
   previewUrl: {

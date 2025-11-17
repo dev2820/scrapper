@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import LinkifyIt from "linkify-it";
 import React from "react";
 import {
@@ -197,55 +198,22 @@ type HyperlinkTextProps = {
 function HyperlinkText({
   url,
   children,
-  linkStyle,
   pressedStyle,
   suppressHighlighting,
   onPress,
-  baseStyle,
-  baseClassName,
 }: HyperlinkTextProps) {
-  const [pressed, setPressed] = React.useState(false);
-
   const handlePress = React.useCallback(() => {
     onPress(url);
   }, [onPress, url]);
-
-  const handlePressIn = React.useCallback(() => {
-    setPressed(true);
-  }, []);
-
-  const handlePressOut = React.useCallback(() => {
-    setPressed(false);
-  }, []);
 
   return (
     <RNText
       suppressHighlighting={suppressHighlighting}
       onPress={handlePress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      className={baseClassName}
-      style={[
-        baseStyle,
-        styles.link,
-        linkStyle,
-        pressed && styles.linkPressed,
-        pressed && pressedStyle,
-      ]}
+      className={cn("underline")}
+      style={[pressedStyle]}
     >
       {children}
     </RNText>
   );
 }
-
-const styles = StyleSheet.create({
-  link: {
-    color: "hsl(0 0% 98%)",
-    textDecorationLine: "underline",
-    textDecorationStyle: "solid",
-    textDecorationColor: "hsl(0 0% 98%)",
-  },
-  linkPressed: {
-    color: "hsl(0 0% 88%)",
-  },
-});

@@ -17,6 +17,7 @@ import { useThemeColor } from "@/hooks/use-theme-color";
 export function MessageInput() {
   const colorScheme = useColorScheme();
   const borderColor = useThemeColor(colorScheme, "border");
+  const mutedTextColor = useThemeColor(colorScheme, "mutedForeground");
   const addMessage = useAddMessage();
   const [draft, setDraft] = useState("");
   const height = useSharedValue(60);
@@ -34,7 +35,7 @@ export function MessageInput() {
 
   return (
     <NativeOnlyAnimatedView
-      className="flex flex-row py-2 px-2"
+      className={cn("flex flex-row py-2 px-2")}
       style={[
         animatedStyle,
         { borderStyle: "solid", borderTopWidth: 1, borderColor: borderColor },
@@ -44,11 +45,11 @@ export function MessageInput() {
         className={cn(
           "bg-input",
           "text-6 leading-normal flex-1 min-h-12 rounded-3xl px-6 pt-3",
+          "border-solid border-width-1 border-border",
+          "text-foreground",
         )}
-        style={[
-          { borderStyle: "solid", borderWidth: 1, borderColor: borderColor },
-        ]}
         placeholder="Type a message"
+        placeholderTextColor={mutedTextColor}
         value={draft}
         onChangeText={setDraft}
         onContentSizeChange={(e: TextInputContentSizeChangeEvent) => {
@@ -61,12 +62,16 @@ export function MessageInput() {
       />
       <Button
         size="icon"
-        className="ml-2 self-end rounded-full size-12 bg-accent active:bg-accent/80"
+        className="ml-2 self-end rounded-full size-12 bg-primary active:bg-primary/80"
         onPress={handleSend}
         accessibilityLabel="Send message"
         disabled={!canSend}
       >
-        <Icon as={SendHorizonal} size={20} className="text-accent-foreground" />
+        <Icon
+          as={SendHorizonal}
+          size={20}
+          className="text-primary-foreground"
+        />
       </Button>
     </NativeOnlyAnimatedView>
   );

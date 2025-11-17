@@ -16,9 +16,12 @@ export default function WebViewScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
-      <View className="flex-row items-center justify-end px-3 py-1 border-b border-slate-200">
-        <Pressable className="p-2" onPress={() => router.back()}>
+    <SafeAreaView className="flex-1 bg-background">
+      <View className="flex-row items-center justify-end px-3 py-1 border-b border-border">
+        <Pressable
+          className="p-2 text-foreground"
+          onPress={() => router.back()}
+        >
           <Icon as={X} size={24} className="text-foreground" />
         </Pressable>
       </View>
