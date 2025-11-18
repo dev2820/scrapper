@@ -14,7 +14,8 @@ import {
 } from "react-native-reanimated";
 import { useThemeColor } from "@/hooks/use-theme-color";
 
-export function MessageInput() {
+export function MessageInput(props: { onSend?: (text: string) => void }) {
+  const { onSend } = props;
   const colorScheme = useColorScheme();
   const borderColor = useThemeColor(colorScheme, "border");
   const mutedTextColor = useThemeColor(colorScheme, "mutedForeground");
@@ -31,7 +32,8 @@ export function MessageInput() {
     addMessage(draft);
     setDraft("");
     height.set(60);
-  }, [addMessage, draft, height]);
+    onSend?.(draft);
+  }, [addMessage, draft, height, onSend]);
 
   return (
     <NativeOnlyAnimatedView

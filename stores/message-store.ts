@@ -3,6 +3,7 @@ import { persist, createJSONStorage, StateStorage } from "zustand/middleware";
 import type { Message } from "@/types/Message";
 import { storage as mmkvStorage } from "@/lib/mmkv";
 import { uuid } from "@/utils/uuid";
+import { isBefore } from "date-fns";
 
 interface MessagesState {
   messages: Message[];
@@ -48,14 +49,20 @@ export const useMessagesStore = create<MessagesStore>()(
       messages: [],
 
       addMessage: (message) => {
-        set({ messages: [...get().messages, message] });
+        set({
+          messages: [...get().messages, message].sort((a, b) =>
+            isBefore(a.date, b.date) ? 1 : -1,
+          ),
+        });
       },
 
       updateMessage: (id, updates) => {
         set({
-          messages: get().messages.map((msg) =>
-            msg.id === id ? { ...msg, ...updates } : msg,
-          ),
+          messages: get()
+            .messages.map((msg) =>
+              msg.id === id ? { ...msg, ...updates } : msg,
+            )
+            .sort((a, b) => (isBefore(a.date, b.date) ? 1 : -1)),
         });
       },
 

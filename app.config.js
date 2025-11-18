@@ -30,6 +30,7 @@ module.exports = {
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
       package: "com.dev2820.scrapper",
+      softwareKeyboardLayoutMode: "resize",
     },
     web: {
       output: "static",
