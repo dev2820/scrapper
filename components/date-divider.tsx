@@ -19,7 +19,7 @@ export function DateDivider(props: { date: Date }) {
   return (
     <View className="flex-row items-center mt-4 mb-1">
       <View className="flex-1 h-px bg-slate-200" />
-      <Text className="mx-3 text-[13px] text-slate-600 uppercase tracking-wider">
+      <Text className="mx-3 text-[13px] text-slate-500 uppercase tracking-wider">
         {dateLabel}
       </Text>
       <View className="flex-1 h-px bg-slate-200" />
