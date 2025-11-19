@@ -4,7 +4,7 @@ import { MessageView } from "@/components/message-view";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { useRef } from "react";
 import { FlatList } from "react-native";
-import { isIOS } from "@/utils/device";
+// import { isIOS } from "@/utils/device";
 
 export default function HomeScreen() {
   const flatListRef = useRef<FlatList>(null);

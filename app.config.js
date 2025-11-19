@@ -31,6 +31,13 @@ module.exports = {
       predictiveBackGestureEnabled: false,
       package: "com.dev2820.scrapper",
       softwareKeyboardLayoutMode: "resize",
+      intentFilters: [
+        {
+          action: "SEND",
+          type: "text/plain",
+          category: ["DEFAULT"],
+        },
+      ],
     },
     web: {
       output: "static",
@@ -51,8 +58,19 @@ module.exports = {
           },
         },
       ],
-      "./plugins/withShareExtension",
-      "./plugins/withShareTarget.js",
+      // "./plugins/withShareExtension",
+      // "./plugins/withShareTarget.js",
+      [
+        "expo-share-intent",
+        {
+          iosActivationRules: {
+            NSExtensionActivationSupportsText: true,
+            NSExtensionActivationSupportsWebURLWithMaxCount: 1,
+            NSExtensionActivationSupportsWebPageWithMaxCount: 1,
+          },
+          androidIntentFilters: ["text/*"],
+        },
+      ],
     ],
     experiments: {
       typedRoutes: true,
