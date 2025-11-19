@@ -37,7 +37,7 @@ export function MessageInput(props: { onSend?: (text: string) => void }) {
 
   return (
     <NativeOnlyAnimatedView
-      className={cn("flex flex-row py-2 px-2")}
+      className={cn("flex flex-row items-end py-2 px-2")}
       style={[
         animatedStyle,
         { borderStyle: "solid", borderTopWidth: 1, borderColor: borderColor },
