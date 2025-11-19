@@ -28,7 +28,6 @@ export default function RootLayout() {
           <KeyboardProvider>
             <Stack>
               <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="share" options={{ headerShown: false }} />
               <Stack.Screen
                 name="webview"
                 options={{

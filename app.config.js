@@ -58,8 +58,6 @@ module.exports = {
           },
         },
       ],
-      // "./plugins/withShareExtension",
-      // "./plugins/withShareTarget.js",
       [
         "expo-share-intent",
         {
