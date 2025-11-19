@@ -25,6 +25,7 @@ export default function RootLayout() {
     <ShareIntentProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <QueryClientProvider client={queryClient}>
+          <HandleShareIntent />
           <KeyboardProvider>
             <Stack>
               <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -38,7 +39,6 @@ export default function RootLayout() {
               />
             </Stack>
             <StatusBar style="auto" />
-            <HandleShareIntent />
             <PortalHost />
           </KeyboardProvider>
         </QueryClientProvider>
